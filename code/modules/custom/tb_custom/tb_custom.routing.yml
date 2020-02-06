@@ -1,0 +1,184 @@
+tb_custom.get_game_title:
+  path: '/get-game-title/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::getGameTitle'
+    _title: 'Get game Title'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.RequestList:
+  path: '/request-list-export/{arg}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\RequestExport::RequestList'
+    _title: 'Reports List'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.games_autocomplete:
+  path: '/admin/tb_custom/autocomplete/game-autocomplete-report'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::gamesAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.games_combine_autocomplete:
+  path: '/admin/tb_custom/autocomplete/game-combine-autocomplete-report'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::gamesCombineAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.playcenter_autocomplete:
+  path: '/admin/tb_custom/autocomplete/playcenter'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::playcenterAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.playcenter_combine_autocomplete:
+  path: '/admin/tb_custom/autocomplete/playcenter-combine'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::playcenterCombineAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.data_entry_pc_autocomplete:
+  path: '/admin/tb_custom/autocomplete/data-playcenter-combine'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::DataEntryPlaycenterCombineAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.partner_autocomplete:
+  path: '/admin/tb_custom/autocomplete/partner'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::partnerAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.field_officer_autocomplete:
+  path: '/admin/tb_custom/autocomplete/fieldofficer'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::fieldOfficerAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.full_stocks:
+  path: '/full-stock-report'
+  defaults:
+    _form: '\Drupal\tb_custom\Form\TbCustomFullStockReport'
+    _title: 'Center Stock Report'
+  requirements:
+    _role: administrator + field_officer + welfare_manager + inventory_manager
+
+tb_custom.full_stocks_inv:
+  path: '/full-stock-inv-report'
+  defaults:
+    _form: '\Drupal\tb_custom\Form\TbCustomFullStockInvReport'
+    _title: 'Full Stock Inventory Report'
+  requirements:
+    _role: administrator + inventory_manager + welfare_manager
+
+
+tb_custom.request_sheet:
+  path: '/request-sheet-report'
+  defaults:
+    _form: '\Drupal\tb_custom\Form\TbCustomRequestSheetReport'
+    _title: 'Request Sheet Report'
+  requirements:
+    _role: administrator + inventory_manager + welfare_manager
+
+tb_custom.report_card:
+  path: '/report-card'
+  defaults:
+    _form: '\Drupal\tb_custom\Form\TbCustomReportCard'
+    _title: 'Report Card'
+  requirements:
+    _role: administrator + field_officer + welfare_manager
+
+tb_custom.reports:
+  path: '/reports'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::reports'
+    _title: 'Reports'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.pc_report_autocomplete:
+  path: '/admin/tb_custom/autocomplete/pc-report'
+  defaults:
+    _controller: '\Drupal\tb_custom\Form\TbCustomReportCard::reportAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.mark_as_packed:
+  path: '/mark-as-packed/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::markAsPacked'
+    _title: 'Mark as Packed'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.mark_as_dispatched:
+  path: '/mark-as-dispatched/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::markAsDispatched'
+    _title: 'Mark as Dispatched'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.mark_as_delivered:
+  path: '/mark-as-delivered/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::markAsDelivered'
+    _title: 'Mark as Delivered'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.mark_as_approved:
+  path: '/mark-as-approved/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::markAsApproved'
+    _title: 'Mark as Approved'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.mark_as_closed:
+  path: '/mark-as-closed/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::markAsClosed'
+    _title: 'Mark as Closed'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.dispatch_sheet_report:
+  path: '/dispatch-sheet-report/{nid}'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbCustomController::dispatchSheetReport'
+    _title: 'Dispatch Sheet Report'
+  requirements:
+    _permission: 'access content'
+
+tb_custom.playcenter_autocomplete:
+  path: '/playcenter-autocomplete'
+  defaults:
+    _controller: '\Drupal\tb_custom\Form\DispatchSheetReport::playcenter_autocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+tb_custom.get_help_section:
+  path: '/help-section'
+  defaults:
+    _controller: '\Drupal\tb_custom\Controller\TbHelpController::getHelpSection'
+    _title: 'Help Section'
+  requirements:
+    _permission: 'access content'

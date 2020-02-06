@@ -1,0 +1,112 @@
+toybank_custom.request:
+  path: '/generate_request'
+  defaults:
+    _form: '\Drupal\toybank_custom\Form\ToybankCustomGenerateRequest'
+    _title: 'Generate Request'
+  requirements:
+    _role: administrator + field_officer + welfare_manager
+
+toybank_custom.editrequest:
+  path: '/edit-request/{rid}'
+  defaults:
+    _form: '\Drupal\toybank_custom\Form\ToybankCustomEditRequest'
+    _title: 'Edit Request'
+  requirements:
+    _role: administrator + welfare_manager
+
+toybank_custom.selectedgame:
+  path: '/ajax/selected-game'
+  defaults:
+    _form: '\Drupal\toybank_custom\Form\ToybankCustomGenerateRequest::ajaxSelectedgame'
+    _title: 'Generate Request'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.addstock:
+  path: '/addstock-report'
+  defaults:
+    _form: '\Drupal\toybank_custom\Form\ToybankCustomAddStock'
+    _title: 'Stock Report'
+  requirements:
+    _role: administrator + inventory_manager + welfare_manager
+
+toybank_custom.library:
+  path: '/playcenter-followup'
+  defaults:
+    _form: '\Drupal\toybank_custom\Form\ToybankCustomLibraryFollowup'
+    _title: 'Playcenter Followup'
+  requirements:
+     _role: administrator + field_officer + welfare_manager
+
+toybank_custom.pc_inv_autocomplete:
+  path: '/admin/toybank_custom/autocomplete/pc-inv'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Form\ToybankCustomLibraryFollowup::invAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.pc_audit:
+  path: '/ajax/playcenter-inv-ad'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Form\ToybankCustomLibraryFollowup::ajaxPcAudit'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.pcmarkissue:
+  path: '/ajax/pc-inv-markissue'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Form\ToybankCustomLibraryFollowup::ajaxPcInvMarkissue'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.current_inventory_status:
+  path: '/current-inventory-status'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Controller\ToybankCustomController::inventoryStatus'
+    _title_callback: '\Drupal\toybank_custom\Controller\ToybankCustomController::getTitle'
+  requirements:
+    _role: administrator + inventory_manager  + inventory_executive + welfare_manager
+
+toybank_custom.current_invent:
+  path: '/ajax/current-inv'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Controller\ToybankCustomController::currentInv'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.mark_issue:
+  path: '/ajax/inv-adu-markissue'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Controller\ToybankCustomController::invAdMarkissue'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.inventory_history:
+  path: '/inventory-history'
+  defaults:
+    _form: '\Drupal\toybank_custom\Form\ToybankCustomInventoryHistory'
+    _title: 'Inventory History'
+  requirements:
+    _role: administrator
+
+toybank_custom.inv_his:
+  path: '/ajax/inventory-ad-history'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Form\ToybankCustomInventoryHistory::ajaxAudit'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.csv_export:
+  path: '/csv/export'
+  defaults:
+    _controller: '\Drupal\toybank_custom\Controller\ToybankCustomController::csvExport'
+  requirements:
+    _permission: 'access content'
+
+toybank_custom.xls_exprts:
+   path: '/xls/exports/{pcid}'
+   defaults:
+     _controller: '\Drupal\toybank_custom\Controller\ToybankCustomController::xlsExprt'
+   requirements:
+    _role: administrator + data_entry_admin + welfare_manager

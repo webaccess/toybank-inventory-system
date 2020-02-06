@@ -1,0 +1,13 @@
+name: Go Back
+type: module
+description: 'Add a block with a button to go back to the previous page.'
+package: User interface
+core: 8.x
+dependencies:
+  - drupal:block
+  - drupal:node
+
+# Information added by Drupal.org packaging script on 2019-10-15
+version: '8.x-1.4'
+project: 'go_back'
+datestamp: 1571172492

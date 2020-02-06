@@ -1,0 +1,11 @@
+toybank_customJS:
+  version: 1.x
+  js:
+    js/toybank_custom.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+  css:
+    layout:
+      css/toybank_custom.css: {}

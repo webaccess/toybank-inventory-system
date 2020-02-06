@@ -1,0 +1,552 @@
+.path-dashboard .views-element-container:nth-child(1)
+{
+	display: inline-block;
+	width: 100%;
+	vertical-align: top;
+	margin-right: 15px;
+}
+
+.path-dashboard .views-element-container:nth-child(2)
+{
+	display: inline-block;
+	width: 100%;
+}
+
+.path-dashboard h2 {
+  font-size: 24px;
+}
+.request-details-left-side {
+	display: inline-block;
+	width: 56%;
+	margin-right: 75px;
+}
+.request-details-right-side {
+	display: inline-block;
+	width: /*55%;*/35%;
+	vertical-align: top;
+}
+.rd-play-center, .rd-date-of-request, .rd-requested-by, .rd-date-of-packing, .rd-date-of-despatch {
+  width: 100% !important;
+  padding-bottom: 15px;
+}
+.rd-play-center span, .rd-date-of-request span, .rd-date-of-packing span, .rd-date-of-despatch span, .rd-date-of-delivered span, .rd-requested-by span {
+	font-weight: bold;
+	width: 39%;
+	display: inline-block;
+}
+.total-rem-qty, .total-req-qty, .to-packed-qty, .total-dis-qty, .total-delivered-qty {
+	font-weight: normal !important;
+}
+
+.rd-requested-category span {
+	font-weight: bold;
+	margin-bottom: 5px !important;
+	display: block !important;
+}
+.library-followup-form .input-group, .request-sheet-report .input-group, .full-stocks-report .input-group  {
+	width: 67%;
+	display: inline-table;
+	vertical-align: middle;
+}
+
+.full-stocks-report .pcenter_fullstock_rep {
+  display: inline-block;
+  width: 36%;
+}
+
+.library-followup-form .form-type-textfield, .request-sheet-report .form-type-textfield {
+	width: 43%;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.library-followup-form .control-label, .request-sheet-report .control-label {
+    display: inline-block;
+   margin-right: 25px;
+}
+.library-followup-form #edit-submit, .request-sheet-report #edit-submit {
+	margin-bottom: 13px;
+}
+.error-issue-mgs {
+	color: #ff0000;
+	font-weight: bold;
+	margin-top: 15px;
+}
+#dispatch-report-table {
+	width: 100%;
+}
+.request-sheet-report .tbl_inventory, .addstock-form .tbl_inventory, .full-stocks-report .tbl_inventory, .full-stocks-report-inv .tbl_inventory  {
+	width: 100%;
+}
+
+.toy_stock_rep {
+	width: 100% !important;
+	overflow: auto;
+}
+.toy_logo2 {
+	display: table-cell;
+	width: 82%;
+}
+.toy_ft {
+	display: table-cell;
+}
+
+.addstock-form .form-inline, .request-sheet-report .form-inline  {
+	margin-right: 25px;
+	display: inline-block;
+    vertical-align: top !important;
+}
+
+.full-stocks-report .form-inline, .full-stocks-report-inv .form-inline, .full-stocks-report-inv .game_invn_fullstock {
+	display: inline-block !important;
+	width: 23%;
+	vertical-align: top;
+}
+
+.full-stocks-report .form-type-textfield, .full-stocks-report-inv .form-type-textfield {
+	display: inline-block !important;
+	width: auto !important;
+	vertical-align: top;
+}
+
+.full-stocks-report .control-label, .full-stocks-report-inv .control-label, .game_invn_fullstock {
+	display: inline-block;
+	width: 29% !important;
+	vertical-align: middle;
+}
+
+.full-stocks-report-inv .game_invn_fullstock {
+  display: inline-block;
+	width: 29% !important;
+	vertical-align: middle;
+
+}
+
+.game_name_report .input-group {
+  display: inline-table;
+  width: 80%;
+}
+
+.game_name_report {
+  width: 30%;
+  display: inline-block;
+}
+
+.game_name_report .control-label {
+  width: 16% !important;
+  vertical-align: top;
+  display: inline-block;
+  margin-right: 0px;
+  padding-top: 8px;
+}
+
+.full-stocks-report .select-wrapper, .full-stocks-report-inv .select-wrapper {
+	display: inline-block;
+	width: 65%;
+	vertical-align: middle;
+}
+
+.inv-details-game-code, .inv-details-game-name {
+	display: inline-block;
+	margin-right: 50px;
+	margin-bottom: 15px;
+}
+
+.inv-details-game-code span:nth-child(1), .inv-details-game-name span:nth-child(1) {font-weight: bold; margin-right:15px;}
+
+/* request-sheet-report*/ 
+.path-request-sheet-report .rs-report-header-logo {
+  display: inline-block;
+  margin-right: 30%;
+}
+
+.path-request-sheet-report .rs-report-header-title {
+  display: inline-block;
+  margin-right: 34%;
+}
+
+.path-request-sheet-report .rs-report-year {
+  display: inline-block;
+}
+
+.path-request-sheet-report .tbl_inventory th {text-align: center;}
+
+.path-request-sheet-report .tbl_inventory td:nth-child(1) {text-align: center;}
+
+table.tbl_inventory.tbl_cl_yrs td:nth-child(1) {
+  font-weight: bold;
+}
+
+table.cen-de-tbl.tbl_inventory tr > td > span:nth-child(1), table.cen-de-tbl.tbl_inventory tr > td > span:nth-child(3) {
+  width: 15% !important;
+  display: inline-block;
+  vertical-align: top;
+  font-weight: bold;
+}
+table.cen-de-tbl.tbl_inventory tr > td > span:nth-child(2), table.cen-de-tbl.tbl_inventory tr > td > span:nth-child(4) {
+  display: inline-block;
+  margin-right: 35px;
+}
+
+.feedback_tbl table.tbl_inventory tr > td > span:nth-child(1) {
+  width: 85% !important;
+  display: inline-block;
+  vertical-align: top;
+  font-weight: bold;
+}
+
+.feedback_tbl table.tbl_inventory tr > td > span:nth-child(2), .feedback_tbl table.tbl_inventory tr > td > span:nth-child(3) {
+  display: inline-block;
+}
+
+.toy_stock_rep .tbl_inventory tr > td:nth-child(1) {
+  white-space: nowrap !important;
+}
+
+.kids_details table.tbl_inventory tr > th {width:150px !important;}
+
+.path-addstock-report .tbl_inventory th, .path-full-stock-report .tbl_inventory th, .path-request-sheet-report .tbl_inventory th, .path-report-card .tbl_inventory th, .path-full-stock-inv-report .tbl_inventory th {text-align: center !important;}
+.path-addstock-report .panel-body, .path-full-stock-report .panel-body, .path-request-sheet-report .panel-body, .path-report-card .panel-body, .path-full-stock-inv-report .panel-body, .path-generate-request .panel-body  {padding:0px !important;}
+.path-addstock-report .panel, .path-full-stock-report .panel, .path-request-sheet-report .panel, .path-report-card .panel, .path-full-stock-inv-report .panel, .path-generate-request .panel {border:none !important;}
+
+.path-report-card th.vertical-text {
+  /* Something you can count on */
+  height: 100px;
+  white-space: nowrap;
+}
+
+.path-report-card th.vertical-text > div {
+  transform: 
+    /* Magic Numbers */
+   /* translate(25px, 51px)*/
+    /* 45 is really 360 - 45 */
+    rotate(-90deg);
+  width: 17px;
+}
+.path-report-card th.vertical-text > div > span {
+  padding: 5px 0px;
+}
+
+.toy_logo_sec {
+  display: inline-block;
+  width: 94%;
+  margin-top: 50px;
+  margin-bottom: 25px;
+}
+
+.pc_cls_cat {
+  display: inline-block;
+  font-weight: bold;
+}
+
+.report-card-p-details {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 30px;
+  height: 100px;
+}
+
+.center_detail_tb.report-card-cen-details {
+  border: 1px solid #ccc;
+  padding: 15px;
+}
+
+.report-card-p-title {
+  position: relative;
+  top: -34px;
+  right: 0px;
+  background-color: #fff;
+  padding: 10px;
+  float: right;
+  font-weight: 700;
+}
+
+@media print {
+
+  .back-but {
+    display: none !important;
+  }
+
+  table.tbl_inventory.req-sheet-report {
+    page-break-before: always;
+}
+
+.report-card-page1 {page-break-after: always;}
+
+  .region.region-header {display:none;}
+  .toy_logo_sec {
+    width: 84% !important;
+    /*margin-top: 125px !important;*/
+  }
+
+  .container-fluid {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+    }
+
+  .toy_logo2 {
+    display: table-cell;
+    width: 70% !important;
+  }
+
+  .region.region-footer {
+    display: none;
+}
+@page {
+  size: A4; /* DIN A4 standard, Europe */
+  margin-top:0mm;
+  margin-bottom:5mm;
+  margin-right:0mm;
+  margin-left:0mm;
+}
+html, body {
+    width: 210mm;
+    /* height: 297mm; */
+    height: 282mm;
+    background: #FFF;
+    overflow:visible;
+}
+body {
+    padding-top:0mm;
+    padding-bottom:10mm;
+}
+ .tbl_inventory th, .tbl_inventory td {
+    padding:5px !important;
+  }
+
+  .path-request-sheet-report .tbl_inventory th, .path-request-sheet-report .tbl_inventory td {
+    padding:2px !important;
+  }
+
+  .path-full-stock-inv-report .tbl_inventory th, .path-full-stock-inv-report .tbl_inventory td {
+    padding:4px !important;
+  }
+    .views-exposed-form, .example-form, .report-print-wrapper {
+    display: none !important;
+  }
+
+	.dr-header-right, .dr-footer-right {
+ 	  width: 65%;
+	}
+
+	.dr-footer-heading {
+    text-emphasis: center;
+    margin-top:40px;
+  }
+  
+  .path-request-sheet-report .rs-report-header-logo {
+    display: inline-block;
+    margin-right: 30%;
+  }
+  .path-request-sheet-report .rs-report-header-title {
+    display: inline-block;
+    margin-right: 30%;
+  }
+  .path-request-sheet-report .rs-report-year {
+    display: inline-block;
+  }
+  .path-request-sheet-report .tbl_inventory {
+    width: 100% !important;
+    font-size: 12px !important;
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  .path-dashboard .layout--twocol > .layout__region {
+    display: block;
+    width: 100%;
+  }
+  
+  .path-dashboard .views-element-container{
+    width: 100% !important;
+  }
+
+  .path-generate-request .region.region-header {
+    margin-left: -15px;
+    margin-right: -15px;
+    background-color: #f5f5f5;
+    height: 50px;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .path-generate-request .user-logged-in section {
+    margin-top: 0px !important;
+}
+
+  .path-generate-request .region.region-content, /*.user-logged-in .region.region-content*/.path-dashboard .region.region-content  {
+    width: 90%;
+    max-width: 1280px;
+    margin: 15px auto 0px;
+    background-image: none !important;
+    overflow:auto !important;
+  }
+
+  .path-generate-request .quick-contact__form {
+    margin-top: 10px !important;
+    padding-right: 0px !important;
+  }
+
+  .path-generate-request #selected_playcenter_label label {
+  width: 100% !important;
+  margin-top: 0px !important;
+  }
+
+  .path-generate-request table > thead > tr > th, .path-generate-request table > tbody > tr > td {
+    padding:3px !important;
+    font-size: 11px !important;
+  } 
+
+  .path-generate-request #pc_generate_request .btn, .path-generate-request.inv_issue_btn {
+  display: inline-block;
+  margin-bottom: 0;
+  text-align: center;
+  vertical-align: middle;
+  padding: 3px 4px !important;
+  font-size: 10px !important;
+  border-radius: 0px !important;
+  color: #000;
+  background-color: #fcc900;
+  border-color: #daaf06;
+  font-weight: 700;
+  }
+}
+
+a.btn.cancel-btn {
+  background-color: #ddd;
+  border: 1px solid #ddd !important;
+  display: inline-block;
+}
+
+.path-inventory-history .panel {
+  border:none !important;
+}
+
+.path-inventory-history .panel-body {
+  padding:0px;
+}
+
+.path-reports table#tb_reports {
+  width: 100%;
+  font-weight: bold;
+}
+
+.path-reports table#tb_reports tr td:nth-child(2) {
+  width:125px !important;
+  text-align: center !important;
+}
+
+.path-pending-request-details  .form-type-select  {
+  margin-right: 80px;
+  width:35%;
+  display: inline-block;
+}
+
+.path-taxonomy #edit-relations, .path-taxonomy .feed-icons, .taxonomy-term-kbi-category-form #edit-relations, .taxonomy-term-kids-background-form #edit-relations, .taxonomy-term-type-of-center-form #edit-relations, .taxonomy-term-type-of-form #edit-relations, .taxonomy-term-type-of-school-form #edit-relations, .taxonomy-term-type-of-activity-form #edit-relations, .taxonomy-term-partner-type-form #edit-relations {
+    display: none;
+}
+
+.block-go-back .button {
+  background: #fcc900 !important;
+  font-size: 14px !important;
+  padding: 16px !important;
+  border: 1px solid #daaf06 !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  padding: 6px 12px !important;
+  float: right;
+  text-decoration: none !important;
+}
+
+.block-go-back .button:hover {
+  color: #fff !important;
+    background-color: #000 !important;
+    text-decoration: none;
+    border: 1px solid #000;
+}
+
+.node-inventory-form .select-wrapper {
+  display:inline-block !important;
+}
+
+.path-user #block-userbackbutton {
+  text-align: right;
+}
+
+
+@media all and (-ms-high-contrast:none)
+{
+#ui-datepicker-div {top: 165px !important;} /* IE10 */
+*::-ms-backdrop, #ui-datepicker-div { top: 165px !important; } /* IE11 */
+/*media all*/
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+  #ui-datepicker-div { top: 165px !important; }
+} 
+
+.path-dashboard .views-element-container table th, .path-partner .views-element-container table th, .path-manage-users .views-element-container table th,.path-playcenter .views-element-container table th, .path-source-pickup .views-element-container table th, .path-kbi .views-element-container table th, .path-cluster .views-element-container table th, .path-kbi-category .views-element-container table th, .path-kids-background .views-element-container table th, .path-type-of-center .views-element-container table th, .path-type-of .views-element-container table th, .path-type-of-school .views-element-container table th, .path-partner-type .views-element-container table th, .path-type-of-activity .views-element-container table th, .path-inventory-listing .views-element-container table th, .path-current-inventory-status table th, .path-pending-game-requests .views-element-container table th, .path-packed-game-requests .views-element-container table th, .path-dispatched-game-requests .views-element-container table th, .path-game-issue-report .views-element-container table th, .path-inventory-details .views-element-container table th, .path-pending-request-details .views-element-container table th, .path-playcenter-followup table th, .path-activity-listing table th, .path-generate-request table th, .path-delivered-game-requests table th, .path-playcenter-issue-report table th, .path-verify-new-games table th, .path-activity-listings  table th, .path-dispatched-request-details table th, .view-game-requests table th, .view-game-request-details table th, .view-playcenter-issue-report  table th, .view-game-field-collection table th  {
+	color: #333;
+	font-size: 14px;
+}
+.path-dashboard .views-element-container table th a, .path-partner .views-element-container table th a, .path-manage-users .views-element-container table th a, .path-playcenter .views-element-container table th a, .path-source-pickup .views-element-container table th a, .path-kbi .views-element-container table th a, .path-cluster .views-element-container table th a, .path-kbi-category .views-element-container table th a, .path-kids-background .views-element-container table th a, .path-type-of-center .views-element-container table th a, .path-type-of .views-element-container table th a, .path-type-of-school .views-element-container table th a, .path-partner-type .views-element-container table th a, .path-type-of-activity .views-element-container table th a, .path-inventory-listing .views-element-container table th a, .path-game-issue-report .views-element-container table th a, .path-activity-listing table th a, .path-verify-new-games table th a, .path-activity-listings  table th a, .path-dispatched-request-details table th a, .path-pending-game-requests .views-element-container table th, .view-game-requests table th a, .view-game-request-details table th a, .view-playcenter-issue-report  table th a, .view-game-field-collection table th a {
+	color: #333;
+	font-size: 14px;
+	text-decoration: underline;
+}
+
+.path-kbi-category .js-form-item-name.form-group, .path-kids-background .js-form-item-name.form-group, .path-type-of-center .js-form-item-name.form-group, .path-type-of .js-form-item-name.form-group, .path-type-of-school .js-form-item-name.form-group, .path-partner-type .js-form-item-name.form-group, .path-type-of-activity .js-form-item-name.form-group {
+	width: 310px;
+}
+
+/*.path-dashboard .views-align-center {
+	text-align: left;
+}*/
+.path-full-stock-report .view-filters {
+	padding-bottom: 20px;
+}
+.library-followup-form .panel-body {
+	padding: 0;
+}
+
+.library-followup-form .panel {
+  border:none !important;
+}
+#full_stock_wrapper, #fullstock_inv_wrapper {
+	overflow: auto;
+}
+
+.page-node-type-record-activity .field--name-field-upload-document-activity .field--label {
+	width: 100%;
+	display: inline-block;
+	margin-bottom: 0px;
+}
+
+.page-node-type-record-activity .field--name-field-upload-document-activity .field--items {
+	width: 100%;
+	display: inline-block;
+}
+
+.field--name-field-upload-documents-activity /*.field--name-field-upload-documents-partner*/ {
+	width: 14%;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 25px;
+}
+
+.field--name-field-description-activity /*.field--name-field-description-partner*/ {
+	display: inline-block;
+	width: 45%;
+	vertical-align: top;
+}
+
+.wm_u.path-pending-request-details .tot-req-wm , .wm_u.path-pending-request-details .total-rem-wm , .wm_u.path-pending-request-details .request-category-details {
+    display: none !important;
+}
+.path-generate-request caption {
+	font-size: 20px;
+	color: inherit;
+}
+
+.path-generate-request .panel {box-shadow: none !important;}

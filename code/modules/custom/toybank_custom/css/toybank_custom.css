@@ -1,0 +1,64 @@
+.layout-region.layout-region-node-secondary {
+  display: none;
+}
+
+.tbl_generate_request th {
+  border: 1px solid black;
+  padding: 10px !important;
+}
+
+.tbl_generate_request td {
+  border: 1px solid black;
+  padding: 10px !important;
+}
+
+.tbl_game_details th {
+  border: 1px solid black;
+  padding: 10px !important;
+}
+.tbl_game_details td {
+  border: 1px solid black;
+  padding: 10px !important;
+}
+
+.selected {
+  background-color: blue;
+}
+.pc_generate_request th {
+  border: 1px solid black;
+  padding: 10px !important;
+}
+
+.pc_generate_request td {
+  border: 1px solid black;
+  padding: 10px !important;
+}
+
+#selected_playcenter_label label {
+  width: 50%;
+  margin-top: 20px;
+}
+
+#selected_fieldofficer_label label {
+  width: 50%;
+}
+
+#edit-final-generate-request {
+  margin: auto;
+}
+
+#node-game-form #edit-langcode-wrapper {
+  display: none;
+}
+
+#select_fieldofficer {
+  display: none;
+}
+
+.field--name-field-multiple-games .ief-entity-table .inline-entity-form-node-type {
+  display: none;
+}
+
+.field--name-field-multiple-games .ief-entity-table .inline-entity-form-node-status {
+  display: none;
+}

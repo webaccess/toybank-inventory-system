@@ -1,0 +1,10 @@
+name: Paranoia
+description: 'Protects a site from some insecure configurations.'
+# core: 8.x
+type: module
+
+# Information added by Drupal.org packaging script on 2017-09-28
+version: '8.x-1.0-alpha1'
+core: '8.x'
+project: 'paranoia'
+datestamp: 1506626416

@@ -1,0 +1,6 @@
+administer menu_per_role:
+  title: Administer menu per role
+  description: Permission for who can access the menu per role forms.
+bypass menu_per_role access:
+  title: Bypass menu per role access
+  description: Allows users to access all menu links regardless of their role and configured menu links roles.

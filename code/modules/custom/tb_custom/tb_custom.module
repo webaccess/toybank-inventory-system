@@ -1,0 +1,2121 @@
+<?php
+
+/**
+ * @file
+ * Toybank cutomizations.
+ */
+
+use Drupal\node\Entity\Node;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\user\Entity\User;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\field_collection\Entity\FieldCollectionItem;
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\file\Entity\File;
+
+/**
+ * Implementation of hook_views_query_alter().
+ */
+function tb_custom_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  $user_roles = \Drupal::currentUser()->getRoles();
+
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_5' || $view->current_display == 'data_export_3')) {
+    // Filter query alter for custer.
+    if (isset($view->exposed_raw_input['field_associated_field_officer_target_id'])) {
+      $assoc_tid = $view->exposed_raw_input['field_associated_field_officer_target_id'];
+      $assc_tid  = explode('(', $assoc_tid);
+      $assc_tid  = str_replace(')', '', $assc_tid[1]);
+
+      if (is_numeric($assc_tid)) {
+        foreach ($query->where as &$condition_group) {
+          foreach ($condition_group['conditions'] as &$condition) {
+            if ($condition['field'] == 'node__field_associated_field_officer.field_associated_field_officer_target_id') {
+              $condition = [
+                'field'    => 'node__field_associated_field_officer.field_associated_field_officer_target_id',
+                'value'    => $assc_tid,
+                'operator' => '=',
+              ];
+            }
+          }
+        }
+      }
+      else {
+        $assc_tid_q = db_query("SELECT ud.uid
+                                FROM tban_users_field_data AS ud
+                                LEFT JOIN tban_user__roles AS r ON ud.uid =r.entity_id
+                                LEFT JOIN tban_user__field_first_name AS fn ON fn.entity_id = ud.uid
+                                LEFT JOIN tban_user__field_last_name AS ln ON ln.entity_id = fn.entity_id
+                                WHERE r.roles_target_id = 'field_officer' AND ((fn.field_first_name_value LIKE '%$assoc_tid%') OR (ln.field_last_name_value LIKE '%$assoc_tid%') OR (ud.mail LIKE '%$assoc_tid%'))")->fetchAll();
+
+        if (!empty($assc_tid_q)) {
+          $tids = [];
+
+          foreach ($assc_tid_q as $t) {
+            $tids[] = $t->uid;
+          }
+
+          foreach ($query->where as &$condition_group) {
+            foreach ($condition_group['conditions'] as &$condition) {
+              if ($condition['field'] == 'node__field_associated_field_officer.field_associated_field_officer_target_id') {
+                $condition = [
+                  'field'    => 'node__field_associated_field_officer.field_associated_field_officer_target_id',
+                  'value'    => $tids,
+                  'operator' => 'IN',
+                ];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //date filter
+  //~ if (($view->id() == 'game_requests' && ($view->current_display == 'page_1' ))) {
+    //~ if (!empty($view->exposed_raw_input['field_gr_date_of_request_value'])) {
+      //~ $date_min = strtotime($view->exposed_raw_input['field_gr_date_of_request_value']['min']);
+      //~ $date_max = strtotime($view->exposed_raw_input['field_gr_date_of_request_value']['max'] . '23:59:59');
+
+
+      //~ foreach ($query->where as &$condition_group) {
+        //~ print_r($condition_group['conditions']);
+
+        //~ foreach ($condition_group['conditions'] as &$condition) {
+          //~ if ($condition['field'] == 'node__field_associated_field_officer.field_associated_field_officer_target_id') {
+            //~ $condition = [
+              //~ 'field'    => 'node__field_associated_field_officer.field_associated_field_officer_target_id',
+              //~ 'value'    => $tids,
+              //~ 'operator' => 'IN',
+            //~ ];
+          //~ }
+        //~ }
+      //~ }
+    //~ }
+  //~ }
+
+
+  // Filter query.
+  if (($view->id() == 'game_requests' && ($view->current_display == 'page_1' || $view->current_display == 'page_2' || $view->current_display == 'page_3' || $view->current_display == 'page_4' || $view->current_display == 'page_5')) || ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1'))) {
+    $user_id     = \Drupal::currentUser()->id();
+    $where_query = '';
+    $play_ids    = [];
+
+    if (isset($view->exposed_raw_input['field_play_center_target_id']) && !empty(isset($view->exposed_raw_input['field_play_center_target_id']))) {
+      $playcen = $view->exposed_raw_input['field_play_center_target_id'];
+
+      if (in_array('field_officer', $user_roles)) {
+        $where_query = "AND fo.field_associated_field_officer_target_id = {$user_id}";
+      }
+
+      $play_cq = db_query("SELECT DISTINCT(n.nid)
+                           FROM tban_node_field_data as n
+                           LEFT JOIN tban_node__field_playc as pc ON pc.entity_id = n.nid
+                           LEFT JOIN tban_node__field_cluster as c ON c.entity_id = n.nid
+                           LEFT JOIN tban_node__field_associated_field_officer as fo ON fo.entity_id = c.field_cluster_target_id
+                           WHERE n.type = 'play_center' AND ((CONCAT_WS(' ', pc.field_playc_value, ' ', n.title) LIKE '%$playcen%')) $where_query")->fetchAll();
+
+      if (!empty($play_cq)) {
+        foreach ($play_cq as $p) {
+          $play_ids[] = $p->nid;
+        }
+      }
+
+      foreach ($query->where as &$condition_group) {
+        foreach ($condition_group['conditions'] as &$condition) {
+          if ($condition['field'] == 'node__field_play_center.field_play_center_target_id') {
+            $condition = [
+              'field'    => 'node__field_play_center.field_play_center_target_id',
+              'value'    => $play_ids,
+              'operator' => 'IN',
+            ];
+          }
+        }
+      }
+    }
+  }
+
+  // Filter query partner for playcenter.
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_4') || ($view->current_display == 'data_export_5')) {
+    if (isset($view->exposed_raw_input['field_partner_target_id'])) {
+      $pids      = [];
+      $pname     = $view->exposed_raw_input['field_partner_target_id'];
+      $partner_q = db_query("SELECT n.nid
+                             FROM tban_node_field_data as n
+                             LEFT JOIN tban_node__field_partner_code as p ON p.entity_id = n.nid
+                             WHERE n.type = 'partner' AND ((CONCAT_WS(' ', n.title, ' ',  p.field_partner_code_value) LIKE '%$pname%'))")->fetchAll();
+
+      if (!empty($partner_q)) {
+        foreach ($partner_q as $p) {
+          $pids[] = $p->nid;
+        }
+      }
+
+      foreach ($query->where as &$condition_group) {
+        foreach ($condition_group['conditions'] as &$condition) {
+          if ($condition['field'] == 'node__field_partner.field_partner_target_id') {
+            $condition = [
+              'field'    => 'node__field_partner.field_partner_target_id',
+              'value'    => $pids,
+              'operator' => 'IN',
+            ];
+          }
+        }
+      }
+    }
+  }
+
+  // Filter playcenter for activity listing.
+  if ($view->id() == 'activity_listing' && (($view->current_display == 'page_1') || ($view->current_display == 'data_export_1'))) {
+    $play_ids = [];
+
+    if (isset($view->exposed_raw_input['field_play_center_record_target_id'])) {
+      $user_id = \Drupal::currentUser()->id();
+      $playcen = $view->exposed_raw_input['field_play_center_record_target_id'];
+
+      if (in_array('field_officer', $user_roles)) {
+        $where_query = "AND fo.field_associated_field_officer_target_id = {$user_id}";
+      }
+
+      $play_cq = db_query("SELECT DISTINCT(n.nid)
+                           FROM tban_node_field_data as n
+                           LEFT JOIN tban_node__field_playc as pc ON pc.entity_id = n.nid
+                           LEFT JOIN tban_node__field_cluster as c ON c.entity_id = n.nid
+                           LEFT JOIN tban_node__field_associated_field_officer as fo ON fo.entity_id = c.field_cluster_target_id
+                           WHERE n.type = 'play_center' AND ((CONCAT_WS(' ', pc.field_playc_value, ' ', n.title) LIKE '%$playcen%')) $where_query")->fetchAll();
+
+      if (!empty($play_cq)) {
+        foreach ($play_cq as $p) {
+          $play_ids[] = $p->nid;
+        }
+      }
+
+      foreach ($query->where as &$condition_group) {
+        foreach ($condition_group['conditions'] as &$condition) {
+          if ($condition['field'] == 'node__field_play_center_record.field_play_center_record_target_id') {
+            $condition = [
+              'field'    => 'node__field_play_center_record.field_play_center_record_target_id',
+              'value'    => $play_ids,
+              'operator' => 'IN',
+            ];
+          }
+        }
+      }
+    }
+  }
+
+  if (($view->id() == 'game_requests' && ($view->current_display == 'page_1' || $view->current_display == 'page_2' || $view->current_display == 'page_3' || $view->current_display == 'page_4' || $view->current_display == 'block_1' || $view->current_display == 'block_2')) || ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1'))) {
+    if (in_array('field_officer', $user_roles)) {
+      $user_id             = \Drupal::currentUser()->id();
+      $game_req_nids_query = db_query("SELECT DISTINCT cl.entity_id
+                                       FROM tban_node__field_cluster as cl
+                                       LEFT JOIN tban_node__field_associated_field_officer as fo ON fo.entity_id = cl.field_cluster_target_id
+                                       WHERE fo.field_associated_field_officer_target_id = $user_id")->fetchAll();
+
+      if (!empty($game_req_nids_query)) {
+        $nid_arr = [];
+        $nid_arr = array_column($game_req_nids_query, 'entity_id');
+        $query->addWhere('', 'node__field_play_center.field_play_center_target_id', $nid_arr, 'IN');
+      }
+    }
+  }
+
+  if ($view->id() == 'inventory_listing' && ($view->current_display == 'page_1') || ($view->current_display == 'data_export_1')) {
+    $inv_game_nids_query = db_query("SELECT DISTINCT field_game_name_target_id FROM tban_field_collection_item__field_game_name")->fetchAll();
+
+    if (!empty($inv_game_nids_query)) {
+      $nid_arr = [];
+      $nid_arr = array_column($inv_game_nids_query, 'field_game_name_target_id');
+      //$query->addWhere('', 'node_field_data.nid', $nid_arr, 'IN');
+    }
+  }
+
+  if ($view->id() == 'playcenter_issue_report' && $view->current_display == 'page_1') {
+    $user_id         = \Drupal::currentUser()->id();
+    $pcir_nids_query = db_query("SELECT nd.nid
+                                 FROM tban_node_field_data as nd
+                                 LEFT JOIN tban_node__field_cluster as clust ON clust.entity_id = nd.nid
+                                 LEFT JOIN tban_node__field_associated_field_officer as fo ON fo.entity_id = clust.field_cluster_target_id
+                                 WHERE nd.type = 'play_center' AND fo.field_associated_field_officer_target_id = $user_id")->fetchAll();
+
+    if (!empty($pcir_nids_query)) {
+      $nid_arr = [];
+      $nid_arr = array_column($pcir_nids_query, 'nid');
+        //~ foreach ($query->where as &$condition_group) {
+          //~ foreach ($condition_group['conditions'] as &$condition) {
+            //~ if ($condition['field'] == 'node__field_pc_name_issue_ad.field_pc_name_issue_ad_target_id') {
+              //~ $condition = [
+                //~ 'field'    => 'node__field_pc_name_issue_ad.field_pc_name_issue_ad_target_id',
+                //~ 'value'    => $nid_arr,
+                //~ 'operator' => 'IN',
+              //~ ];
+            //~ }
+          //~ }
+        //~ }
+
+        $query->addWhere('', 'node__field_pc_name_issue_ad.field_pc_name_issue_ad_target_id ', $nid_arr, 'IN');
+    }
+  }
+
+  // Pending game request
+  if ($view->id() == 'game_requests' && ($view->current_display == 'page_1')) {
+    if (in_array('inventory_executive', $user_roles)) {
+
+      foreach ($query->where as &$condition_group) {
+        foreach ($condition_group['conditions'] as &$condition) {
+
+          if ($condition['field'] == 'node__field_fo_status.field_fo_status_value') {
+            $condition = [
+                'field'    => 'node__field_fo_status.field_fo_status_value',
+                'value'    => 'approved',
+                'operator' => '=',
+            ];
+          }
+        }
+      }
+    }
+  }
+
+  if ($view->id() == 'game_requests' && $view->current_display == 'page_1') {
+    if (in_array('inventory_manager', $user_roles)) {
+      $query->addWhere('', 'node__field_fo_status.field_fo_status_value', 'approved', '=');
+    }
+  }
+}
+
+/**
+ * Implementation of hook_views_pre_view().
+ */
+function tb_custom_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  $user_roles = \Drupal::currentUser()->getRoles();
+
+  if ($view->id() == 'game_request_details') {
+    if ($view->current_display == 'page_1') {
+      if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles) || in_array('administrator', $user_roles) || in_array('field_officer', $user_roles)) {
+        $view->removeHandler($display_id, 'field', 'form_field_field_req_game_quantity');
+      }
+
+      if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles) || in_array('administrator', $user_roles)) {
+        $view->removeHandler($display_id, 'field', 'field_packed_quantity');
+      }
+
+      if (in_array('field_officer', $user_roles) || in_array('welfare_manager', $user_roles)) {
+        $view->removeHandler($display_id, 'field', 'field_total_inventory');
+        $view->removeHandler($display_id, 'field', 'form_field_field_packed_quantity');
+        $view->removeHandler($display_id, 'field', 'form_field_field_request_status');
+        $view->removeHandler($display_id, 'footer', 'area');
+      }
+
+      if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles)) {
+        $nid = $view->args[0];
+
+        if (!empty($nid)) {
+          $fo_status_query = db_query("SELECT field_fo_status_value FROM tban_node__field_fo_status WHERE entity_id = $nid")->fetchAll();
+
+          if (!empty($fo_status_query)) {
+            if ($fo_status_query[0]->field_fo_status_value == 'waiting_for_approval' || $fo_status_query[0]->field_fo_status_value == 'denied') {
+              $view->removeHandler($display_id, 'field', 'form_field_field_packed_quantity');
+              $view->removeHandler($display_id, 'field', 'form_field_field_request_status');
+              $view->removeHandler($display_id, 'footer', 'area');
+            }
+          }
+        }
+      }
+
+      if (in_array('welfare_manager', $user_roles)) {
+        $nid = $view->args[0];
+
+        if (!empty($nid)) {
+          $fo_status_query = db_query("SELECT field_fo_status_value FROM tban_node__field_fo_status WHERE entity_id = $nid")->fetchAll();
+
+          if (!empty($fo_status_query)) {
+            if ($fo_status_query[0]->field_fo_status_value == 'waiting_for_approval') {
+              $view->removeHandler($display_id, 'field', 'field_req_game_quantity');
+            }
+
+            if ($fo_status_query[0]->field_fo_status_value == 'approved' || $fo_status_query[0]->field_fo_status_value == 'denied') {
+              $view->removeHandler($display_id, 'field', 'form_field_field_req_game_quantity');
+            }
+          }
+        }
+      }
+
+      $nid = $view->args[0];
+
+      if (!empty($nid)) {
+        $req_date = db_query("SELECT field_gr_date_of_request_value as date  FROM tban_node__field_gr_date_of_request WHERE entity_id = $nid")->fetchAll();
+          if (!empty($req_date)) {
+            $reqdate = date("Y-m-d", $req_date[0]->date);
+            $current_date = date("Y-m-d");
+            $diff = strtotime($current_date) - strtotime($reqdate);
+            $days = abs(round($diff / 86400));
+          }
+          $content             = "<div class='request-details-wrapper'>
+                                    <div class='request-details-left-side'>
+                                    <div class='rd-play-center'><span>Play Center</span> : {{ field_playc }} / {{ field_play_center }} / {{ field_cluster }} </div>
+                                    <div class='rd-date-of-request'><span>Date of Request</span> : {{ field_gr_date_of_request }}</div>
+                                    <div class='rd-date-of-request '><span>Request Age (Days)</span> : " . $days . "</div>
+                                    </div>
+                                    <div class='request-details-right-side'>
+                                    <div class='rd-requested-by'><span>Request ID (RID)</span> : {{nid}}</div>
+                                    <div class='rd-requested-by'><span>Requested By (PO/WM)</span> : {{ field_first_name}} {{ field_last_name }}</div>
+                                    <a id='scroll-content'></a>
+                                    </div>
+                                    <div class='request-category-details'>
+                                     <div class='rd-requested-category' id='req-details-top'><span>Requested Game Stats: (#Packed / #Requested)</span></div>
+                                     <div class='req-cat-detail-inner' >{{ field_requested_quantity }}</div>
+                                    </div>";
+          $options             = [];
+          $options             = $view->getHandler('page_1', 'header', 'area_text_custom');
+          $options['content']  = $content;
+          $view->setHandler('page_1', 'header', 'area_text_custom', $options);
+      }
+    }
+
+    if ($view->current_display == 'page_2') {
+      if (in_array('welfare_manager', $user_roles) || in_array('field_officer', $user_roles)) {
+        $view->removeHandler($display_id, 'footer', 'area');
+      }
+      $nid = $view->args[0];
+
+      if (!empty($nid)) {
+        $req_date = db_query("SELECT field_gr_date_of_request_value as date FROM tban_node__field_gr_date_of_request WHERE entity_id = $nid")->fetchAll();
+
+        if (!empty($req_date)) {
+          $reqdate = date("Y-m-d", $req_date[0]->date);
+          $current_date = date("Y-m-d");
+          $diff = strtotime($current_date) - strtotime($reqdate);
+          $days = abs(round($diff / 86400));
+        }
+
+        $content             = "<div class='request-details-wrapper'>
+                                  <div class='request-details-left-side'>
+                                    <div class='rd-play-center'><span>Play Center</span> : {{ field_playc }} / {{ field_play_center }} / {{ field_cluster }} </div>
+                                    <div class='rd-date-of-request'><span>Date of Request</span> : {{ field_gr_date_of_request }}</div>
+                                    <div class='rd-date-of-request'><span>Date of Packing</span> : {{ field_gr_date_of_packed }}</div>
+                                    <div class='rd-date-of-request'><span>Request Age (Days)</span> : ".$days."</div>
+                                  </div>
+                                  <div class='request-details-right-side'>
+                                    <div class='rd-requested-by'><span>Request ID (RID)</span> : {{nid}}</div>
+                                    <div class='rd-requested-by'><span>Requested By (PO/WM)</span> : {{ field_first_name }} {{ field_last_name }}</div>
+                                    <div class='rd-requested-by'><span>Packed By (IM/IE)</span> : {{ field_first_name_1 }} {{ field_last_name_1 }}</div>
+                                    <a id='scroll-content'></a>
+                                  </div>
+                                <div class='request-cat-details'>
+                                   <div class='rd-requested-category' id='req-details-top'><span>Requested Game Stats: (#Packed / #Requested)</span></div>
+                                   <div class='req-cat-detail-inner'>{{ field_requested_quantity }}</div>
+                                </div>";
+        $options             = [];
+        $options             = $view->getHandler('page_2', 'header', 'area_text_custom');
+        $options['content']  = $content;
+        $view->setHandler('page_2', 'header', 'area_text_custom', $options);
+      }
+    }
+
+    if ($view->current_display == 'page_3') {
+      if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles) || in_array('welfare_manager', $user_roles)) {
+        $view->removeHandler($display_id, 'footer', 'area');
+      }
+      $nid         = $view->args[0];
+
+      if (!empty($nid)) {
+
+          $req_date = db_query("SELECT field_gr_date_of_request_value as date  FROM tban_node__field_gr_date_of_request WHERE entity_id = $nid")->fetchAll();
+          if (!empty($req_date)) {
+            $reqdate = date("Y-m-d", $req_date[0]->date);
+            $current_date = date("Y-m-d");
+            $diff = strtotime($current_date) - strtotime($reqdate);
+            $days = abs(round($diff / 86400));
+          }
+
+          $content            = "<div class='request-details-wrapper'>
+                                  <div class='request-details-left-side'>
+                                    <div class='rd-play-center'><span>Play Center</span> : {{ field_playc }} / {{ field_play_center }} / {{ field_cluster }}</div>
+                                    <div class='rd-date-of-request'><span>Date of Request</span> : {{ field_gr_date_of_request }}</div>
+                                    <div class='rd-date-of-packing'><span>Date of Packing</span> : {{ field_gr_date_of_packed }}</div>
+                                    <div class='rd-date-of-despatch'><span>Date of Dispatch</span> : {{ field_gr_date_of_dispatched }}</div>
+                                    <div class='rd-date-of-request'><span>Request Age (Days)</span> : ".$days."</div>
+                                  </div>
+                                    <div class='request-details-right-side'>
+                                    <div class='rd-requested-by'><span>Request ID (RID)</span> : {{ nid }}</div>
+                                    <div class='rd-requested-by'><span>Requested By (PO/WM)</span> : {{ field_first_name }} {{ field_last_name }}</div>
+                                    <div class='rd-requested-by'><span>Packed By (IM/IE)</span> : {{ field_first_name_2 }} {{ field_last_name_2 }}</div>
+                                    <div class='rd-requested-by'><span>Dispatched By (IM/IE)</span> : {{ field_first_name_1 }} {{ field_last_name_1 }}</div>
+                                    <a id='scroll-content'></a>
+                                  </div>
+                                    <div class='request-cat-details'>
+                                     <div class='rd-requested-category' id='req-details-top'><span>Requested Game Stats: (#Dispatched / #Requested)</span></div>
+                                     <div class='req-cat-detail-inner' >{{ field_requested_quantity }}</div>
+                                    </div>";
+          $options            = [];
+          $options            = $view->getHandler('page_3', 'header', 'area_text_custom');
+          $options['content'] = $content;
+          $view->setHandler('page_3', 'header', 'area_text_custom', $options);
+      }
+    }
+
+    if ($view->current_display == 'page_4') {
+      $nid         = $view->args[0];
+
+      if (!empty($nid)) {
+        $req_date = db_query("SELECT field_gr_date_of_request_value as date  FROM tban_node__field_gr_date_of_request WHERE entity_id = $nid")->fetchAll();
+        if (!empty($req_date)) {
+          $reqdate = date("Y-m-d", $req_date[0]->date);
+          $current_date = date("Y-m-d");
+          $diff = strtotime($current_date) - strtotime($reqdate);
+          $days = abs(round($diff / 86400));
+        }
+        $content             = "<div class='request-details-wrapper'>
+                                  <div class='request-details-left-side'>
+                                    <div class='rd-play-center'><span>Play Center</span> : {{ field_playc }} / {{ field_play_center }} / {{ field_cluster }}</div>
+                                    <div class='rd-date-of-request'><span>Date of Request</span> : {{ field_gr_date_of_request }}</div>
+                                    <div class='rd-date-of-packing'><span>Date of Packing</span> : {{ field_gr_date_of_packed }}</div>
+                                    <div class='rd-date-of-despatch'><span>Date of Dispatch</span> : {{ field_gr_date_of_dispatched }}</div>
+                                    <div class='rd-date-of-despatch'><span>Date of Delivery</span> : {{ field_gr_date_of_delivered }}</div>
+                                     <div class='rd-date-of-request'><span>Request Age (Days)</span> : ".$days."</div>
+                                  </div>
+                                  <div class='request-details-right-side'>
+                                    <div class='rd-date-of-packing'><span>Request ID (RID)</span>: {{ nid }}</div>
+                                    <div class='rd-requested-by'><span>Requested By (PO/WM)</span> : {{ field_first_name }} {{ field_last_name }}</div>
+                                    <div class='rd-requested-by'><span>Packed By (IM/IE)</span> : {{ field_first_name_1 }} {{ field_last_name_1 }}</div>
+                                    <div class='rd-requested-by'><span>Dispatched By (IM/IE)</span> : {{ field_first_name_2 }} {{ field_last_name_2 }}</div>
+                                    <div class='rd-requested-by'><span>Delivered By (PO)</span> : {{ field_first_name_3 }} {{ field_last_name_3 }}</div>
+                                    <a id='scroll-content'></a>
+                                  </div>
+                                  <div class='request-cat-details'>
+                                   <div class='rd-requested-category' id='req-details-top'><span>Requested Game Stats: (#Delivered / #Requested)</span></div>
+                                   <div class='req-cat-detail-inner' >{{ field_requested_quantity }}</div>
+                                  </div>";
+        $options             = [];
+        $options             = $view->getHandler('page_4', 'header', 'area_text_custom');
+        $options['content']  = $content;
+        $view->setHandler('page_4', 'header', 'area_text_custom', $options);
+
+      }
+
+      if (!in_array('inventory_manager', $user_roles)) {
+        $view->removeHandler($display_id, 'footer', 'area');
+      }
+       if (in_array('field_officer', $user_roles) || (in_array('welfare_manager', $user_roles))) {
+        $view->removeHandler($display_id, 'field', 'form_field_field_packed_quantity');
+       }
+    }
+
+    if ($view->current_display == 'page_5') {
+      $nid         = $view->args[0];
+
+      if (!empty($nid)) {
+          $req_date = db_query("SELECT field_gr_date_of_request_value as date  FROM tban_node__field_gr_date_of_request WHERE entity_id = $nid")->fetchAll();
+          if (!empty($req_date)) {
+            $reqdate = date("Y-m-d", $req_date[0]->date);
+            $current_date = date("Y-m-d");
+            $diff = strtotime($current_date) - strtotime($reqdate);
+            $days = abs(round($diff / 86400));
+          }
+
+        $content             = "<div class='request-details-wrapper'>
+                                  <div class='request-details-left-side'>
+                                    <div class='rd-play-center'><span>Play Center</span>: {{ field_playc }} / {{ field_play_center }} / {{ field_cluster }}</div>
+                                    <div class='rd-requested-by'><span>Requested By (PO/WM)</span>: {{ field_first_name }} {{ field_last_name }}</div>
+                                    <div class='rd-requested-by'><span>Approved By (WM)</span>: {{ field_first_name_2 }} {{ field_last_name_2 }}</div>
+                                    <div class='rd-requested-by'><span>Packed By (IM/IE)</span>: {{ field_first_name_1 }} {{ field_last_name_1 }}</div>
+                                    <div class='rd-requested-by'><span>Dispatched By (IM/IE)</span>: {{ field_first_name_3 }} {{ field_last_name_3 }}</div>
+                                    <div class='rd-requested-by'><span>Delieverd By (PO)</span>: {{ field_first_name_4 }} {{ field_last_name_4 }}</div>
+                                    <div class='rd-requested-by'><span>Closed By (IM/WM)</span>: {{ field_first_name_5 }} {{ field_last_name_5 }}</div>
+                                    <div class='rd-date-of-request'><span>Request Age (Days)</span> : ".$days."</div>
+                                  </div>
+                                  <div class='request-details-right-side'>
+                                    <div class='rd-date-of-packing'><span>Request ID (RID)</span>: {{ nid }}</div>
+                                    <div class='rd-date-of-request'><span>Date of Request</span>: {{ field_gr_date_of_request }}</div>
+                                    <div class='rd-date-of-request'><span>Date of Approval</span>: {{ field_gr_date_of_approval_denied }}</div>
+                                    <div class='rd-date-of-packing'><span>Date of Packing</span>: {{ field_gr_date_of_packed }}</div>
+                                    <div class='rd-date-of-despatch'><span>Date of Dispatch</span>: {{ field_gr_date_of_dispatched }}</div>
+                                    <div class='rd-date-of-despatch'><span>Date of Delivery</span>: {{ field_gr_date_of_delivered }}</div>
+                                    <div class='rd-date-of-despatch'><span>Date of Closure</span>: {{ field_gr_date_of_closed}}</div>
+                                    <a id='scroll-content'></a>
+                                  </div>
+                                </div>
+                                 <div class='request-cat-details'>
+                                   <div class='rd-requested-category' id='req-details-top'><span>Requested Game Stats: (#Delivered / #Requested)</span></div>
+                                   <div class='req-cat-detail-inner' >{{ field_requested_quantity }}</div>
+                                  </div>";
+        $options             = [];
+        $options             = $view->getHandler('page_5', 'header', 'area_text_custom');
+        $options['content']  = $content;
+        $view->setHandler('page_5', 'header', 'area_text_custom', $options);
+      }
+    }
+  }
+
+  if (($view->id() == 'game_requests' && $view->current_display == 'page_2') || ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1'))) {
+    if (in_array('welfare_manager', $user_roles) || in_array('field_officer', $user_roles)) {
+      $view->removeHandler($display_id, 'field', 'nothing');
+    }
+    else {
+      if ($view->id() == 'game_requests') {
+        $view->removeHandler($display_id, 'field', 'nothing_1');
+      }
+
+      if ($view->id() == 'game_request_listing') {
+        $view->removeHandler($display_id, 'field', 'nothing_2');
+      }
+    }
+  }
+
+  if ($view->id() == 'game_requests' && ($view->current_display == 'page_1' || $view->current_display == 'pending_game_dashboard')) {
+    if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles)) {
+      $view->removeHandler($display_id, 'field', 'field_fo_status');
+    }
+
+    if (in_array('welfare_manager', $user_roles)) {
+      $view->removeHandler($display_id, 'field', 'nothing');
+    }
+    else {
+      $view->removeHandler($display_id, 'field', 'nothing_1');
+    }
+  }
+
+  if ($view->id() == 'game_request_details' && $view->current_display == 'page_1') {
+    $nid = $view->args[0];
+
+    if (!empty($nid)) {
+      $fo_status_query = db_query("SELECT field_fo_status_value FROM tban_node__field_fo_status WHERE entity_id = $nid")->fetchAll();
+
+      if (!empty($fo_status_query)) {
+        if ($fo_status_query[0]->field_fo_status_value == 'denied') {
+          $remarks_query = db_query("SELECT field_fo_remarks_value FROM tban_node__field_fo_remarks WHERE entity_id = $nid")->fetchAll();
+
+          if (!empty($remarks_query)) {
+            $options = [
+              'id'           => 'area_text_custom',
+              'table'        => 'views',
+              'field'        => 'area_text_custom',
+              'relationship' => 'none',
+              'group_type'   => 'none',
+              'admin_label'  => '',
+              'empty'        => TRUE,
+              'tokenize'     => FALSE,
+              'content'      => '<div class="remark-denied"><span class ="reason-denied">Reason of Denied: </span>' . $remarks_query[0]->field_fo_remarks_value . '</div>',
+              'plugin_id'    => 'text_custom',
+            ];
+
+            $view->setHandler($display_id, 'footer', 'area_text_custom', $options);
+          }
+        }
+      }
+    }
+  }
+
+  if ($view->id() == 'game_request_details' && $view->current_display == 'page_5') {
+      $nid = $view->args[0];
+
+    if (!empty($nid)) {
+      $sql = db_query("SELECT dc.field_documents_request_closed_target_id as fid, de.field_description_request_closed_value as description
+                        FROM tban_node__field_documents_request_closed as dc
+                        LEFT JOIN tban_node__field_description_request_closed as de ON dc.entity_id = de.entity_id
+                        WHERE dc.entity_id = $nid ")->fetchAll();
+      if(!empty($sql[0]->description)) {
+        $description = '<span class ="desc-close-label">Description: </span><span class="desc-close-value">'.$sql[0]->description.'</span>';
+      }
+      $fid   = $sql[0]->fid;
+
+      if ($fid) {
+        $file = File::load($fid);
+        $file_name = $file->getFilename();
+        $uri = $file->getFileUri();
+        $url = str_replace('public://','/sites/default/files/',$uri);
+        $final_url = '<span class ="desc-close-label">Document: </span><span class="desc-close-value"><a href="'.$url.'">'.$file_name.'</a></span>';
+      }
+
+      $options = [
+        'id'           => 'area_text_custom',
+        'table'        => 'views',
+        'field'        => 'area_text_custom',
+        'relationship' => 'none',
+        'group_type'   => 'none',
+        'admin_label'  => '',
+        'empty'        => TRUE,
+        'tokenize'     => FALSE,
+        'content'      => '<div class="game-req-doc-closed">
+                            <div class="req-close-descript">'.$description.'</div>
+                            <div class="req-close-file">'.$final_url.'</div>
+                          </div>',
+        'plugin_id'    => 'text_custom',
+      ];
+
+      $view->setHandler($display_id, 'footer', 'area', $options);
+    }
+  }
+
+  if ($view->id() == 'inventory_listing' && ($view->current_display == 'page_1' || $view->current_display == 'block_1')) {
+    if (in_array('inventory_executive', $user_roles)) {
+      $view->removeHandler($display_id, 'field', 'nothing_1');
+    }
+
+    if (in_array('inventory_manager', $user_roles) || in_array('welfare_manager', $user_roles) || in_array('data_entry_admin', $user_roles) || in_array('field_officer', $user_roles) || in_array('administrator', $user_roles)) {
+      $view->removeHandler($display_id, 'field', 'nothing');
+    }
+  }
+
+  if ($view->id() == 'game_field_collection' && ($view->current_display == 'page_1')) {
+    if (in_array('inventory_executive', $user_roles)) {
+      $view->removeHandler($display_id, 'field', 'edit_node');
+    }
+  }
+}
+
+/**
+ * Implementation of hook_views_pre_render().
+ */
+function tb_custom_views_pre_render(ViewExecutable $view) {
+  // Partners data alter.
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_2')) {
+    foreach ($view->result as $value) {
+      $pid        = $value->_entity->get('nid')->value;
+      $total_kids = 0;
+
+      if (!empty($pid)) {
+        $query = db_query("SELECT COUNT(n.nid) as no_of_playcenter, SUM(COALESCE(ppg.field_pre_primary_girls_value,0)) + SUM(COALESCE(pg.field_pri_girls_value,0)) +  SUM(COALESCE(sg.field_secondry_girls_value,0)) + SUM(COALESCE(ppb.field_pre_primary_boys_value,0)) + SUM(COALESCE(pb.field_prima_value,0)) + SUM(COALESCE(sb.field_second_value,0)) as total_kids
+                           FROM tban_node_field_data as n
+                           LEFT JOIN tban_node__field_partner as p ON p.entity_id= n.nid
+                           LEFT JOIN tban_node__field_pre_primary_girls as ppg ON ppg.entity_id= n.nid
+                           LEFT JOIN tban_node__field_pri_girls as pg on pg.entity_id=n.nid
+                           LEFT JOIN tban_node__field_secondry_girls as sg ON sg.entity_id = n.nid
+                           LEFT JOIN tban_node__field_pre_primary_boys as ppb ON ppb.entity_id = n.nid
+                           LEFT JOIN tban_node__field_prima as pb ON pb.entity_id = n.nid
+                           LEFT JOIN tban_node__field_second as sb ON sb.entity_id = n.nid
+                           WHERE n.type = 'play_center' AND p.field_partner_target_id = {$pid}")->fetchAll();
+
+        if (!empty($query)) {
+          $value->_entity->set('vid', $query[0]->no_of_playcenter);
+
+          if (!empty($query[0]->total_kids)) {
+            $total_kids = $query[0]->total_kids;
+          }
+
+          $value->_entity->set('field_partner_contact_details', $total_kids);
+        }
+      }
+    }
+  }
+
+  // Cluster firstname.
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_5')) {
+    $name = [];
+
+    foreach ($view->result as $value) {
+      $nid = $value->_entity->get('nid')->value;
+
+      if (!empty($nid)) {
+        $query = db_query("SELECT CONCAT(fn.field_first_name_value ,' ', ln.field_last_name_value ) AS name
+                           FROM tban_node_field_data AS nd
+                           LEFT JOIN tban_node__field_associated_field_officer AS fo ON fo.entity_id = nd.nid
+                           LEFT JOIN tban_user__field_first_name AS fn ON fn.entity_id = fo.field_associated_field_officer_target_id
+                           LEFT JOIN tban_user__field_last_name AS ln ON ln.entity_id = fo.field_associated_field_officer_target_id
+                           WHERE nid = {$nid} ")->fetchAll();
+
+        if (!empty($query)) {
+          $name = [];
+
+          foreach ($query as $v) {
+            $name[] = $v->name;
+          }
+
+          $value->_entity->set('field_view_cluster_name', implode(', ', $name));
+        }
+      }
+    }
+  }
+
+  //playcenter - partner name/code
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_4')) {
+
+    foreach ($view->result as $value) {
+      $nid = $value->_entity->get('nid')->value;
+      $partner = array();
+
+      if (!empty($nid)) {
+        $query = db_query("SELECT CONCAT('(',pc.field_partner_code_value,') ',nd.title) as partner  FROM tban_node_field_data as nd
+                            LEFT JOIN tban_node__field_partner as fp ON fp.field_partner_target_id = nd.nid
+                            LEFT JOIN tban_node__field_partner_code as pc ON pc.entity_id = nd.nid
+                            WHERE type = 'partner' AND fp.entity_id = {$nid}")->fetchAll();
+
+
+        if (!empty($query)) {
+          $partner = [];
+
+          foreach ($query as $v) {
+            $partner[] = $v->partner;
+          }
+
+          $value->_entity->set('field_address_pc',  implode(', ', $partner));
+        }
+
+      }
+    }
+  }
+
+  //Requested qty and days
+  if ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1')) {
+    foreach ($view->result as $value) {
+      $nid = $value->_entity->get('nid')->value;
+      $req_qty = 0;
+      $days = '-';
+
+      if (!empty($nid)) {
+        $requested_query = db_query("SELECT SUM(fc1.field_req_game_quantity_value) as req_qty, SUM(fc2.field_packed_quantity_value) as packed_qty
+                                     FROM tban_node__field_game_request_quantity as rqt
+                                     LEFT JOIN tban_field_collection_item__field_req_game_quantity AS fc1 ON rqt.field_game_request_quantity_value = fc1.entity_id
+                                     LEFT JOIN tban_field_collection_item__field_packed_quantity AS fc2 ON fc1.entity_id = fc2.entity_id
+                                     WHERE rqt.entity_id = {$nid}
+                                     GROUP BY fc1.field_req_game_quantity_value,fc2.field_packed_quantity_value")->fetchAll();
+
+        $query = db_query("SELECT ad.field_gr_date_of_approval_denied_value as a_date , dd.field_gr_date_of_delivered_value as d_date ,rs.field_game_request_status_value
+                           FROM tban_node__field_gr_date_of_approval_denied as ad
+                           LEFT JOIN tban_node__field_gr_date_of_delivered AS dd ON dd.entity_id = ad.entity_id
+                           LEFT JOIN tban_node__field_game_request_status AS rs ON rs.entity_id = ad.entity_id
+                           WHERE ad.entity_id = {$nid} AND
+                            (rs.field_game_request_status_value  = 'delivered' OR  rs.field_game_request_status_value = 'closed' OR rs.field_game_request_status_value = 'partially_delivered')")->fetchAll();
+
+        if (!empty($requested_query[0]->req_qty)) {
+          $req_qty = $requested_query[0]->req_qty;
+        }
+
+        if (!empty($requested_query[0]->packed_qty)) {
+          $packed_qty = $requested_query[0]->packed_qty;
+        }
+
+        if (!empty($query)) {
+          $diff = ($query[0]->d_date) - ($query[0]->a_date);
+          $days = abs(round($diff / 86400));
+        }
+
+        $value->_entity->set('field_fo_remarks', $req_qty);
+        $value->_entity->set('field_description_request_closed', $days);
+        $value->_entity->set('field_packed_qty_exp', $packed_qty);
+      }
+    }
+  }
+
+  //kbi count /similar count
+  if ($view->id() == 'verify_new_games' && ($view->current_display == 'verify_game_csv')) {
+    foreach ($view->result as $value) {
+      $nid = $value->_entity->get('nid')->value;
+      $count_kbi = $count_similar = $closed_qty = 0;
+
+      if (!empty($nid)) {
+        $count_kbi_query  = db_query("SELECT COUNT(field_game_kbis_target_id) as kbi  FROM tban_node__field_game_kbis WHERE entity_id = {$nid}")->fetchAll();
+
+        $count_similar_query  = db_query("SELECT COUNT(field_similar_game_family_target_id) as similar_games  FROM tban_node__field_similar_game_family WHERE entity_id = {$nid}")->fetchAll();
+
+        $closed_query  = db_query("SELECT SUM(pq.field_packed_quantity_value) as total_closed_qty
+                                  FROM tban_node__field_game_request_status as gs
+                                  LEFT JOIN tban_node__field_game_request_quantity as fc ON fc.entity_id = gs.entity_id
+                                  LEFT JOIN tban_field_collection_item__field_request_game_name as gn ON gn.entity_id = fc.field_game_request_quantity_value
+                                  LEFT JOIN tban_field_collection_item__field_packed_quantity as pq ON pq.entity_id = gn.entity_id
+                                  WHERE gs.field_game_request_status_value = 'closed' AND gn.field_request_game_name_target_id = {$nid} ")->fetchAll();
+
+        if (!empty($count_similar_query[0]->similar_games)) {
+          $count_similar = $count_similar_query[0]->similar_games;
+        }
+
+        if (!empty($count_kbi_query[0]->kbi)) {
+          $count_kbi =  $count_kbi_query[0]->kbi;
+        }
+
+
+        if (!empty($closed_query[0]->total_closed_qty)) {
+          $closed_qty =  $closed_query[0]->total_closed_qty;
+        }
+
+        $value->_entity->set('field_kbi_count', $count_kbi);
+        $value->_entity->set('field_similar', $count_similar);
+        $value->_entity->set('field_qty_center', $closed_qty);
+
+      }
+    }
+  }
+  //inventory listing
+  if ($view->id() == 'inventory_listing' && ($view->current_display == 'data_export_1')) {
+    foreach ($view->result as $value) {
+      $nid = $value->_entity->get('nid')->value;
+      $count_kbi = $count_similar = $closed_qty = $system = $days = $requested = $total_qty = 0;
+
+      if (!empty($nid)) {
+
+        $count_kbi_query  = db_query("SELECT COUNT(nd.title) as kbi_count
+                                      FROM tban_node__field_game_kbis as kb
+                                      LEFT JOIN tban_node_field_data as nd on nd.nid = kb.field_game_kbis_target_id
+                                      WHERE entity_id = {$nid}")->fetchAll();
+
+        $count_similar_query  = db_query("SELECT COUNT(field_similar_game_family_target_id) as similar_games  FROM tban_node__field_similar_game_family WHERE entity_id = {$nid}")->fetchAll();
+
+        $age_query = db_query("SELECT created FROM tban_node_field_data WHERE nid = {$nid}")->fetchAll();
+
+        $system_qty = db_query("SELECT ti.field_total_inventory_value as total
+                                FROM tban_node__field_inv_game_name as gn
+                                LEFT JOIN tban_node__field_total_inventory as ti on ti.entity_id = gn.entity_id
+                                WHERE gn.field_inv_game_name_target_id = {$nid}")->fetchAll();
+
+        $requested_qty = db_query("SELECT SUM(ti.field_pc_total_inventory_value) as req_qty
+                                  FROM tban_node__field_pc_inv_game_name as gn
+                                  LEFT JOIN tban_node__field_pc_total_inventory as ti ON gn.entity_id = ti.entity_id
+                                  WHERE gn.field_pc_inv_game_name_target_id = {$nid} ")->fetchAll();
+
+
+        if (!empty($count_similar_query[0]->similar_games)) {
+          $count_similar = $count_similar_query[0]->similar_games;
+        }
+
+        if (!empty($count_kbi_query[0]->kbi_count)) {
+          $count_kbi = $count_kbi_query[0]->kbi_count;
+          //~ $kbi_name  = $count_kbi_query[0]->kbi_name;
+        }
+
+        if (!empty($age_query[0]->created)) {
+          $reqdate =  $age_query[0]->created;
+          $current_date = time();
+          $diff = ($current_date) - ($reqdate);
+          $days = abs(round($diff / 86400));
+        }
+
+        if (!empty($system_qty[0]->total)) {
+          $system = $system_qty[0]->total;
+        }
+
+        if (!empty($requested_qty[0]->req_qty)) {
+          $requested = $requested_qty[0]->req_qty;
+        }
+
+        if ((!empty($requested_qty[0]->req_qty)) || (!empty($requested_qty[0]->req_qty))) {
+          $total_qty = (int)$requested + (int)$system;
+        }
+
+        $value->_entity->set('field_kbi_count', $count_kbi);
+        $value->_entity->set('field_similar', $count_similar);
+        $value->_entity->set('field_days', $days);
+        $value->_entity->set('field_rquest_qty', $requested);
+        $value->_entity->set('field_qty_center', $system);
+        $value->_entity->set('field_total_qty', $total_qty);
+
+      }
+    }
+  }
+
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'data_export_5')) {
+    foreach ($view->result as $value) {
+      $ideal_inv = $ideal_qty = $current_qty = $shortfall_qty = 0;
+      $nid = $value->_entity->get('nid')->value;
+
+      if (!empty($nid)) {
+        $total_ideal = db_query("SELECT field_no_of_kids_session_value as ideal FROM tban_node__field_no_of_kids_session WHERE entity_id = {$nid}")->fetchall();
+
+        if (!empty($total_ideal[0]->ideal)) {
+          //~ $ideal_inv = (($total_ideal[0]->ideal) * 0.7);
+          $ideal_inv = round(($total_ideal[0]->ideal) * 0.7);
+        }
+
+        $get_update_ideal_id = db_query("SELECT upinv.field_node_id_update_ideal_inv_value as IdealID
+                                         FROM tban_node__field_node_id_update_ideal_inv upinv
+                                         WHERE upinv.entity_id = {$nid}")->fetchAll();
+        $update_ideal_node   = Node::load($get_update_ideal_id[0]->IdealID);
+
+        $current_query = db_query("SELECT SUM(ti.field_pc_total_inventory_value) as current_qty
+                                  FROM tban_node__field_pc_total_inventory as ti
+                                  LEFT JOIN tban_node__field_play_center_inventory_name as pc ON pc.entity_id = ti.entity_id
+                                  WHERE pc.field_play_center_inventory_name_target_id = {$nid}")->fetchAll();
+
+        if (!empty($update_ideal_node)) {
+          $ideal_qty = $update_ideal_node->get('field_strategy_update_ideal')->value +
+                       $update_ideal_node->get('field_puzzle_update_ideal')->value +
+                       $update_ideal_node->get('field_block_update_ideal')->value +
+                       $update_ideal_node->get('field_alphabetical_update_ideal')->value +
+                       $update_ideal_node->get('field_numerical_update_ideal')->value +
+                       $update_ideal_node->get('field_general_update_ideal')->value;
+        }
+
+        if (!empty($current_query[0]->current_qty)) {
+          $current_qty = $current_query[0]->current_qty;
+        }
+
+        $shortfall_qty = $ideal_qty - $current_qty ;
+
+      }
+
+      $value->_entity->set('field_node_id_update_ideal_inv', $ideal_inv);
+      $value->_entity->set('field_ideal_exp', $ideal_qty);
+      $value->_entity->set('field_current_exp', $current_qty);
+      $value->_entity->set('field_shortfall_exp', $shortfall_qty);
+    }
+  }
+}
+
+/**
+ * Implements cluster form validation.
+ */
+function cluster_form_custom_validate($form, FormStateInterface &$form_state) {
+  $field_id = $form_state->getValue('field_associated_field_officer');
+  $fids     = [];
+
+  if (!empty($field_id)) {
+    $fids = array_column($field_id, 'target_id');
+    $fids = array_filter($fids);
+
+    if (count($fids) !== count(array_unique($fids))) {
+      $form_state->setErrorByName('field_associated_field_officer', t('Please remove the duplicate field officer.'));
+    }
+  }
+}
+
+/**
+ * Implements user registration form validation.
+ */
+function user_form_custom_validate($form, FormStateInterface &$form_state) {
+  if (empty($form_state->getValue('roles')) || ($form_state->getValue('roles') == 'authenticated')) {
+    $form_state->setErrorByName('roles', t('Please select the Role'));
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'views_form_game_request_details_page_1') !== FALSE) {
+    $user_roles = \Drupal::currentUser()->getRoles();
+
+    if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles)) {
+      $form['actions']['submit']['#submit'][] = 'mark_as_packed';
+      $form['#validate'][]                    = 'mark_as_packed_validate';
+      $form['actions']['submit']['#value']    = 'Request Complete - Mark as Packed';
+    }
+
+    if (in_array('welfare_manager', $user_roles)) {
+      $form['game_request_fo_status'] = [
+        '#title'    => t('Status'),
+        '#type'     => 'select',
+        '#options'  => ['approved' => 'Approved', 'denied' => 'Denied'],
+        '#required' => TRUE,
+      ];
+
+      $form['game_request_remarks'] = [
+        '#title' => t('Remarks'),
+        '#type'  => 'textarea',
+      ];
+
+      $form['actions']['submit']['#submit'][] = 'mark_as_approved';
+    }
+  }
+
+  //mark as closed
+  if (strpos($form_id, 'views_form_game_request_details_page_4') !== FALSE) {
+    $user_roles = \Drupal::currentUser()->getRoles();
+
+    if (in_array('inventory_manager', $user_roles) || in_array('administrator', $user_roles)) {
+
+      $form['form_start'] = [
+          '#markup' => '<div class="upload-docs">',
+      ];
+
+      $form['close_game_request_document'] = [
+        '#title'    => t('Document (Dispatch Sheet)'),
+        '#type'     => 'managed_file',
+        '#upload_validators' => array(
+          'file_validate_extensions' => array('pdf txt jpeg png doc csv xlsx jpg'),
+        ),
+        '#upload_location' => 'public://closed-request-documents',
+      ];
+
+      $form['form_end'] = [
+      '#markup' => '</div>',
+      ];
+
+      $form['close_game_request_description'] = [
+        '#title' => t('Description'),
+        '#type'  => 'textarea',
+        '#rows'  => 2,
+
+      ];
+
+      $form['actions']['submit']['#submit'][] = 'mark_as_close';
+      $form['actions']['submit']['#value']    = 'Mark as Closed';
+    }
+  }
+
+  if ($form_id == 'taxonomy_term_kbi_category_form' || $form_id == 'taxonomy_term_kids_background_form' || $form_id == 'taxonomy_term_type_of_center_form' || $form_id == 'taxonomy_term_type_of_form' || $form_id == 'taxonomy_term_type_of_school_form' || $form_id == 'taxonomy_term_type_of_activity_form') {
+    // to add custom submit handler
+    $form['actions']['submit']['#submit'][] = 'taxonomy_custom_submit_handler';
+  }
+  // Validation.
+  if ($form_id == 'node_game_form' || $form_id == 'node_game_edit_form') {
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/inventory-listing' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_inventory_form' || $form_id == 'node_inventory_edit_form') {
+    $form['#validate'][] = 'inventory_form_custom_validate';
+
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/inventory-listing' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_play_center_edit_form' || $form_id == 'node_play_center_form') {
+    $form['#validate'][] = 'play_center_form_custom_validate';
+
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/playcenter' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_update_ideal_inventory_edit_form') {
+    $form['actions']['cancel'] = [
+      '#markup' => "<a href='/playcenter' class='btn cancel-btn'>Cancel</a>",
+      '#weight' => 20,
+    ];
+  }
+
+  if ($form_id == 'node_kbi_edit_form' || $form_id == 'node_kbi_form') {
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/kbi' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_partner_edit_form' || $form_id == 'node_partner_form') {
+    $form['#validate'][] = 'partner_form_custom_validate';
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/partner' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_source_pickup_edit_form' || $form_id == 'node_source_pickup_form') {
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/source-pickup' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_cluster_edit_form' || $form_id == 'node_cluster_form') {
+    $form['#validate'][] = 'cluster_form_custom_validate';
+
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/cluster' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_record_activity_edit_form' || $form_id == 'node_record_activity_form') {
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+    else {
+      $user = \Drupal::currentUser();
+
+      if (in_array('field_officer', $user->getRoles())) {
+        $form['actions']['cancel'] = [
+          '#markup' => "<a href='/activity-listings' class='btn cancel-btn'>Cancel</a>",
+          '#weight' => 20,
+        ];
+      }
+      else {
+        $form['actions']['cancel'] = [
+          '#markup' => "<a href='/activity-listing' class='btn cancel-btn'>Cancel</a>",
+          '#weight' => 20,
+        ];
+      }
+    }
+  }
+
+  if ($form_id == 'node_game_edit_form') {
+    $user = \Drupal::currentUser();
+
+    if (in_array('welfare_manager', $user->getRoles()) || in_array('inventory_manager', $user->getRoles())) {
+      $nid = $form_state->getformObject()->getEntity()->id();
+
+      if (!empty($nid)) {
+        // Get added date and added by.
+        $author_q   = db_query("SELECT n.created, CONCAT(fn.field_first_name_value , ' ', ln.field_last_name_value) AS name
+                                FROM tban_node_field_data as n
+                                LEFT JOIN tban_user__field_first_name as fn ON fn.entity_id = n.uid
+                                LEFT JOIN tban_user__field_last_name as ln ON ln.entity_id = n.uid
+                                WHERE n.nid = {$nid}")->fetchAll();
+        $game_added = '';
+
+        if (!empty($author_q)) {
+          $game_added = date('d/m/Y', $author_q[0]->created);
+          $name       = $author_q[0]->name;
+        }
+
+        $form['game_added_date'] = [
+          '#type'       => 'textfield',
+          '#title'      => t('Game Added Date'),
+          '#value'      => $game_added,
+          '#attributes' => ['readonly' => 'readonly'],
+          '#weight'     => 8,
+        ];
+
+        $form['game_added_by'] = [
+          '#type'       => 'textfield',
+          '#title'      => t('Game Added By'),
+          '#value'      => $name,
+          '#attributes' => ['readonly' => 'readonly'],
+          '#weight'     => 9,
+        ];
+      }
+
+      //~ $form['field_manufacturer']['#disabled'] = TRUE;
+    }
+
+   if (in_array('inventory_manager', $user->getRoles())) {
+      $form['field_manufacturer']['#disabled'] = TRUE;
+    }
+  }
+
+  if ($form_id == 'node_inventory_edit_form') {
+    // Entered By field.
+    $user                                                  = User::load(\Drupal::currentUser()->id());
+    $username                                              = $user->get('name')->value;
+    $uid                                                   = $user->id();
+    $nid                                                   = $form_state->getformObject()->getEntity()->id();
+    $entered_by                                            = '';
+    $form['title']['widget'][0]['value']['#default_value'] = $username . " - Inventory";
+    $form['title']['#access']                              = FALSE;
+    $form['field_inv_entered_by']['#access']               = FALSE;
+
+    if (!empty($nid)) {
+      $entered_by_q = db_query("SELECT CONCAT(fn.field_first_name_value , ' ', ln.field_last_name_value) AS name
+                                FROM tban_user__field_first_name as fn
+                                LEFT JOIN tban_user__field_last_name as ln on ln.entity_id = fn.entity_id
+                                LEFT JOIN tban_node__field_inv_entered_by as eb on eb.field_inv_entered_by_target_id = fn.entity_id
+                                WHERE eb.entity_id={$nid}")->fetchAssoc();
+    }
+
+    if (!empty($entered_by_q)) {
+      $entered_by = $entered_by_q['name'];
+    }
+
+    $form['inventory_entered_by'] = [
+      '#type'       => 'textfield',
+      '#title'      => t('Entered By'),
+      '#value'      => $entered_by,
+      '#attributes' => ['readonly' => 'readonly'],
+      '#weight'     => 2,
+    ];
+
+    $form['#attached']['library'][] = 'tb_custom/toybank_customJS';
+  }
+
+  if ($form_id == 'node_inventory_form') {
+    // Entered By field.
+    $user                                                     = User::load(\Drupal::currentUser()->id());
+    $username                                                 = $user->get('name')->value;
+    $uid                                                      = $user->id();
+    $form['title']['widget'][0]['value']['#default_value']    = $username . " - Inventory";
+    $form['title']['#access']                                 = FALSE;
+    $form['field_inv_entered_by']['#disabled']                = TRUE;
+    $form['field_inv_entered_by']['widget']['#default_value'] = $uid;
+  }
+
+  // User form alter.
+  if ($form_id == 'user_register_form' || $form_id == 'user_form') {
+    $user = \Drupal::currentUser();
+
+    if (in_array('data_entry_admin', $user->getRoles()) || in_array('super_admin', $user->getRoles())) {
+      unset($form['account']['roles']['#options']['administrator']);
+    }
+
+    // Reset the authenticated account roles.
+    $form['account']['roles']['#options']['authenticated'] = "- None -";
+    $form['account']['roles']['#type']                     = 'select';
+    $form['account']['roles']['#required']                 = TRUE;
+    $form['account']['mail']['#required']                  = TRUE;
+    $form['field_created_by']['#access']                   = FALSE;
+
+    if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+
+    $form['#validate'][] = 'user_form_custom_validate';
+  }
+
+  if ($form_id == 'user_register_form') {
+    $form['actions']['cancel'] = [
+      '#markup' => "<a href='/manage-users' class='btn cancel-btn'>Cancel</a>",
+      '#weight' => 20,
+    ];
+  }
+
+  // Password reset.
+  if ($form_id == 'user_login_form') {
+    $form['actions']['reset'] = [
+      '#markup' => "<a href='/user/password' class='btn lock'>Reset your password</a>",
+      '#weight' => 20,
+    ];
+  }
+
+  if ($form_id == 'user_pass') {
+    $form['actions']['cancel'] = [
+      '#markup' => "<a href='/user/login' class='btn lock'>Cancel</a>",
+      '#weight' => 20,
+    ];
+  }
+
+  if ($form_id == 'taxonomy_term_kbi_category_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit KBI Category');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add KBI Category');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/kbi_category' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'taxonomy_term_kids_background_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit Kids Background');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add Kids Background');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/kids_background' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'taxonomy_term_type_of_center_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit Type of Center');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add Type of Center');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/type_of_center' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+
+    $form['description']['widget'][0]['#title'] = 'Defination';
+  }
+
+  if ($form_id == 'taxonomy_term_type_of_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit Type of Kids');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add Type of Kids');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/type_of' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'taxonomy_term_type_of_school_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit Type of School');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add Type of School');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/type_of_school' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'taxonomy_term_type_of_activity_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit Type of Activity');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add Type of Activity');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/type-of-activity' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'taxonomy_term_partner_type_form') {
+    if (!empty($_GET['destination'])) {
+      $form['#title']            = t('Edit Partner Type');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='{$_GET['destination']}' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 5,
+      ];
+    }
+    else {
+      $form['#title']            = t('Add Partner Type');
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/partner_type' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    }
+  }
+
+  if ($form_id == 'node_help_section_form' || $form_id == 'node_help_section_edit_form') {
+    $system_roles = user_role_names(TRUE);
+    $form['field_help_role']['widget']['#options'] += $system_roles;
+  }
+
+
+}
+
+/**
+ * Implementation of hook_field_widget_form_alter().
+ */
+function tb_custom_field_widget_form_alter(&$element, FormStateInterface &$form_state, $context) {
+  // Alter file button from remove to delete.
+  $field_definition = $context['items']->getFieldDefinition();
+
+  if ($field_definition->getType() == 'file') {
+    if ($element['#field_name'] == 'field_upload_documents_partner') {
+      $element['#process'][] = 'custom_file_upload_buttons_labels';
+    }
+  }
+}
+
+/**
+ * To change label of remove button.
+ */
+function custom_file_upload_buttons_labels($element, FormStateInterface $form_state, $form) {
+  if (isset($element['remove_button']['#value'])) {
+    $element['remove_button']['#value'] = t('Delete');
+  }
+
+  return $element;
+}
+
+/**
+ * Implementation of hook_node_presave().
+ */
+function tb_custom_node_presave(EntityInterface $node) {
+  if ($node->bundle() == "game") {
+    $user = \Drupal::currentUser();
+    $nid  = $node->id();
+
+    if (!empty($nid) && in_array('welfare_manager', $user->getRoles())) {
+      $status = $node->field_game_status[0]->value;
+
+      if ($status == 'Active') {
+        $userid = $user->id();
+        $node->set('field_game_verified_by', $userid);
+      }
+      else {
+        $node->set('field_game_verified_by', "_none");
+      }
+    }
+  }
+
+  if ($node->bundle() == "inventory") {
+    $user   = \Drupal::currentUser();
+    $userid = $user->id();
+    $node->set('field_inv_entered_by', $userid);
+  }
+}
+
+/**
+ * Implementation of hook_form_view_exposed_form_alter().
+ */
+function tb_custom_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $view = $form_state->get('view');
+
+  if ($view->id() == 'manage_users' && ($view->current_display == 'page_1')) {
+    unset($form['roles_target_id']['#options']['administrator']);
+    $form['manage_user_status']['#options'] = [
+      'All' => "- Any -",
+      '1'   => "Active",
+      '0'   => "Blocked",
+    ];
+    //~ // Csv markup field
+    //~ $form['csv_dwnld'] = [
+      //~ '#markup' => '<div class="feed-icons">
+                      //~ <div class="csv-feed views-data-export-feed form-group"><a href="/manage_user.csv?page&amp;_format=csv" class="feed-icon">Download CSV</a></div>
+                    //~ </div>',
+      //~ '#weight' => 40,
+    //~ ];
+  }
+
+  if ($view->id() == 'game_issue_report' && ($view->current_display == 'page_1') || ($view->current_display == 'data_export_1')) {
+    $form['field_issue_game_name_target_id']['#autocomplete_route_name'] = 'tb_custom.games_autocomplete';
+    $old_submit                                                          = $form['#submit'][0];
+    $form['#submit'][0]                                                  = 'game_issue_report_custom_submit';
+    $form['#submit'][1]                                                  = $old_submit;
+  }
+
+  // Verify New Games.
+  if ($view->id() == 'verify_new_games' && ($view->current_display == 'page_1') || ($view->current_display == 'data_export_1')) {
+    $form['game_name_combine']['#autocomplete_route_name'] = 'tb_custom.games_combine_autocomplete';
+  }
+
+  // Inventory Listing.
+  if ($view->id() == 'inventory_listing' && ($view->current_display == 'page_1') || ($view->current_display == 'data_export_1')) {
+    $form['game_combine']['#autocomplete_route_name'] = 'tb_custom.games_combine_autocomplete';
+  }
+
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_4') || ($view->current_display == 'data_export_5')) {
+    $form['playcenter_code_combine']['#autocomplete_route_name'] = 'tb_custom.data_entry_pc_autocomplete';
+    $form['field_partner_target_id']['#autocomplete_route_name'] = 'tb_custom.partner_autocomplete';
+  }
+
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_5' || $view->current_display == 'data_export_3')) {
+    $form['field_associated_field_officer_target_id']['#autocomplete_route_name'] = 'tb_custom.field_officer_autocomplete';
+  }
+
+  // Activity Listing.
+  if ($view->id() == 'activity_listing') {
+    if (($view->current_display == 'page_1') || ($view->current_display == 'data_export_1')) {
+      $form['field_play_center_record_target_id']['#autocomplete_route_name'] = 'tb_custom.playcenter_combine_autocomplete';
+    }
+
+    if (($view->current_display == 'page_2') || ($view->current_display == 'data_export_2')) {
+      $form['field_play_center_record_target_id']['#autocomplete_route_name'] = 'tb_custom.playcenter_autocomplete';
+      $old_submit                                                             = $form['#submit'][0];
+      $form['#submit'][0]                                                     = 'activity_listing_custom_submit';
+      $form['#submit'][1]                                                     = $old_submit;
+    }
+  }
+
+  if ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1')) {
+    $options = [];
+    $options[''] = '-- Any --';
+    $options['pending'] = 'Pending';
+    $options['pending   waiting_for_approval'] = ' - Waiting for Approval';
+    $options['pending   denied'] = ' - Denied';
+    $options['pending   approved'] = ' - Waiting to be Packed';
+    $options['packed'] = 'Packed';
+    $options['dispatched'] = 'Dispatched';
+    $options['partially_delivered'] = 'Partially Delivered';
+    $options['delivered'] = 'Delivered';
+    $options['closed'] = 'Closed';
+
+    $form['status_combine_filter']['#type'] = 'select';
+    $form['status_combine_filter']['#options'] = $options;
+    $form['status_combine_filter']['#size'] = 1;
+  }
+
+  //date filter
+  //~ if (($view->id() == 'game_requests' && ($view->current_display == 'page_1'))) {
+    //~ $form['field_gr_date_of_request_value']['min']['#type'] = 'date';
+    //~ $form['field_gr_date_of_request_value']['max']['#type'] = 'date';
+  //~ }
+
+
+  if (($view->id() == 'game_requests' && ($view->current_display == 'page_1' || $view->current_display == 'page_2' || $view->current_display == 'page_3' || $view->current_display == 'page_4' ||  $view->current_display == 'page_5')) || ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1'))) {
+    $form['field_play_center_target_id']['#autocomplete_route_name'] = 'tb_custom.playcenter_combine_autocomplete';
+    $options = array('' => '-- Any --');
+    $user    = User::load(\Drupal::currentUser()->id());
+    $uid     = $user->get('uid')->value;
+    $fo_condition = "";
+
+    if (in_array('field_officer', $user->getRoles())) {
+      $fo_condition = "AND nid IN (SELECT DISTINCT cl.field_cluster_target_id
+                        FROM tban_node__field_cluster as cl
+                        LEFT JOIN tban_node__field_associated_field_officer as fo ON fo.entity_id = cl.field_cluster_target_id
+                        WHERE fo.field_associated_field_officer_target_id = $uid)";
+    }
+
+    $query = db_query("SELECT title,nid  FROM tban_node_field_data WHERE type = 'cluster' $fo_condition")->fetchAll();
+
+    if (!empty($query)) {
+      foreach ($query as $v) {
+        $options[$v->nid] = $v->title;
+      }
+
+      $form['field_cluster_target_id']['#type'] = 'select';
+      $form['field_cluster_target_id']['#options'] = $options;
+      $form['field_cluster_target_id']['#size'] = 1;
+    }
+  }
+
+  //playcenter classification
+  if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'page_4')) {
+    $options = array('' => '-- Any --');
+    $user    = User::load(\Drupal::currentUser()->id());
+    $uid     = $user->get('uid')->value;
+    $fo_condition = "";
+
+    if (in_array('field_officer', $user->getRoles())) {
+      $fo_condition = "AND nid IN (SELECT DISTINCT cl.field_cluster_target_id
+                        FROM tban_node__field_cluster as cl
+                        LEFT JOIN tban_node__field_associated_field_officer as fo ON fo.entity_id = cl.field_cluster_target_id
+                        WHERE fo.field_associated_field_officer_target_id = $uid)";
+    }
+
+    $query = db_query("SELECT title,nid  FROM tban_node_field_data WHERE type = 'cluster' $fo_condition")->fetchAll();
+
+    if (!empty($query)) {
+      foreach ($query as $v) {
+        $options[$v->nid] = $v->title;
+      }
+
+      $form['field_cluster_target_id']['#type'] = 'select';
+      $form['field_cluster_target_id']['#options'] = $options;
+      $form['field_cluster_target_id']['#size'] = 1;
+    }
+  }
+
+
+  // Playcenter Issue Report.
+  if ($view->id() == 'playcenter_issue_report' && ($view->current_display == 'page_1')) {
+    $form['field_game_name_issuepc_target_id']['#autocomplete_route_name'] = 'tb_custom.games_autocomplete';
+    $old_submit                                                            = $form['#submit'][0];
+    $form['#submit'][0]                                                    = 'playcenter_issue_custom_submit';
+    $form['#submit'][1]                                                    = $old_submit;
+  }
+
+  //Cluster list
+
+}
+
+/**
+ * Custom view exposed filter form submit handler.
+ */
+function game_issue_report_custom_submit($form, FormStateInterface &$form_state) {
+  $game_name = $form_state->getValue('field_issue_game_name_target_id');
+
+  if (isset($game_name)) {
+    $game_nid = explode('(', $game_name);
+    $game_nid = str_replace(')', '', $game_nid[1]);
+    $form_state->setValue('field_issue_game_name_target_id', $game_nid);
+  }
+}
+
+/**
+ * Custom activity listing submit handler.
+ */
+function activity_listing_custom_submit($form, FormStateInterface &$form_state) {
+  $center_name = $form_state->getValue('field_play_center_record_target_id');
+
+  if (isset($center_name)) {
+    $play_nid = explode('(', $center_name);
+    $play_nid = str_replace(')', '', $play_nid[1]);
+    $form_state->setValue('field_play_center_record_target_id', $play_nid);
+  }
+}
+
+/**
+ * Custom playcenter issue form submit handler.
+ */
+function playcenter_issue_custom_submit($form, FormStateInterface &$form_state) {
+  $game_name = $form_state->getValue('field_game_name_issuepc_target_id');
+
+  if (isset($game_name)) {
+    $game_nid = explode('(', $game_name);
+    $game_nid = str_replace(')', '', $game_nid[1]);
+    $form_state->setValue('field_game_name_issuepc_target_id', $game_nid);
+  }
+}
+function taxonomy_custom_submit_handler($form, &$form_state) {
+  // to hide drupal status messages
+  drupal_get_messages('status');
+
+  $term_name = $form_state->getValue('name')[0]['value'];
+  drupal_set_message(new FormattableMarkup('Created new term <b><i>@name</i></b>.', ['@name' => $term_name]));
+}
+/**
+ * Mark game request as approved.
+ */
+function mark_as_approved(&$form, FormStateInterface $form_state) {
+  $form_request_remarks  = '';
+  $form_request_quantity = $form_state->getValue('form_field_field_req_game_quantity');
+  $form_request_status   = $form_state->getValue('game_request_fo_status');
+  $form_request_remarks  = $form_state->getValue('game_request_remarks');
+  $current_path          = \Drupal::service('path.current')->getPath();
+  $nid                   = explode('pending-request-details/', $current_path);
+  $game_nid              = $nid[1];
+
+  if (!empty($game_nid)) {
+    //~ $game_inv_query = db_query("SELECT fc1.entity_id as item_id, gi.entity_id, fc3.field_req_game_quantity_value
+                                //~ FROM tban_node__field_game_request_quantity as fc
+                                //~ LEFT JOIN tban_field_collection_item__field_request_game_name as fc1 ON fc1.entity_id = fc.field_game_request_quantity_value
+                                //~ LEFT JOIN tban_field_collection_item__field_packed_quantity as fc2 ON fc2.entity_id = fc.field_game_request_quantity_value
+                                //~ LEFT JOIN tban_field_collection_item__field_req_game_quantity as fc3 ON fc3.entity_id = fc.field_game_request_quantity_value
+                                //~ LEFT JOIN tban_node__field_inv_game_name as gi ON gi.field_inv_game_name_target_id = fc1.field_request_game_name_target_id
+                                //~ WHERE fc.entity_id = $game_nid ORDER BY fc1.entity_id")->fetchAll();
+
+    $game_inv_query = db_query("SELECT fc1.entity_id as item_id, gi.entity_id, fc3.field_req_game_quantity_value, td.name, nd.title
+                                FROM tban_node__field_game_request_quantity as fc
+                                LEFT JOIN tban_field_collection_item__field_request_game_name as fc1 ON fc1.entity_id = fc.field_game_request_quantity_value
+                                LEFT JOIN tban_node_field_data as nd ON nd.nid = fc1.field_request_game_name_target_id
+                                LEFT JOIN tban_node__field_category as cat ON cat.entity_id = fc1.field_request_game_name_target_id
+                                LEFT JOIN tban_taxonomy_term_field_data as td ON td.tid = cat.field_category_target_id
+                                LEFT JOIN tban_field_collection_item__field_packed_quantity as fc2 ON fc2.entity_id = fc.field_game_request_quantity_value
+                                LEFT JOIN tban_field_collection_item__field_req_game_quantity as fc3 ON fc3.entity_id = fc.field_game_request_quantity_value
+                                LEFT JOIN tban_node__field_inv_game_name as gi ON gi.field_inv_game_name_target_id = fc1.field_request_game_name_target_id
+                                WHERE fc.entity_id = $game_nid ORDER BY td.weight, nd.title")->fetchAll();
+
+    if (!empty($game_inv_query)) {
+          $pc_query = db_query("SELECT nd.title as name, pcc.field_playc_value as code
+                                FROM tban_node__field_play_center as pc
+                                LEFT JOIN tban_node_field_data as nd ON nd.nid = pc.field_play_center_target_id
+                                LEFT JOIN tban_node__field_playc as pcc ON pcc.entity_id = nd.nid
+                                WHERE pc.entity_id = {$game_nid}")->fetchAll();
+      if ($pc_query) {
+        $pc_name = $pc_query[0]->name;
+      }
+      $user_roles = \Drupal::currentUser()->getRoles();
+      $user       = User::load(\Drupal::currentUser()->id());
+      $uid        = $user->id();
+
+      if($uid) {
+        $userName = db_query("SELECT CONCAT(field_first_name_value, ' ', field_last_name_value) as name FROM tban_user__field_first_name as f
+                              LEFT JOIN tban_user__field_last_name as l ON l.entity_id = f.entity_id
+                              WHERE f.entity_id  = $uid")->fetchAssoc();
+        if($userName) {
+          $fname = $userName['name'];
+        }
+      }
+
+      foreach ($game_inv_query as $k => $gi) {
+        $game_inv_node = Node::load($gi->entity_id);
+        $previous_qty  = $game_inv_node->get('field_total_inventory')->value;
+        $prev_req_qty  = $gi->field_req_game_quantity_value;
+        $new_req_qty   = $form_request_quantity[$k]['field_req_game_quantity'][0]['value'];
+
+        if (($form_request_status == 'approved') && ($prev_req_qty != $new_req_qty)) {
+          $req_qty_diff = $new_req_qty - $prev_req_qty;
+          $total_qty    = $previous_qty - $req_qty_diff;
+          $game_inv_node->set('field_total_inventory', $total_qty);
+          // revision
+          $game_inv_node->setNewRevision(TRUE);
+          if ($prev_req_qty < $new_req_qty) {
+            $qty = $new_req_qty - $prev_req_qty;
+            $game_inv_node->revision_log = '-'.abs($qty).' '.$pc_name.' Altered by '. $fname . ' (RID: '.$game_nid.')';
+          }
+          elseif ($prev_req_qty > $new_req_qty) {
+            $qty = $prev_req_qty - $new_req_qty;
+            $game_inv_node->revision_log = '+'.abs($qty).' '.$pc_name.' Altered by '. $fname . ' (RID: '.$game_nid.')';
+          }
+          $game_inv_node->setRevisionCreationTime(REQUEST_TIME);
+          $game_inv_node->setRevisionUserId($user_id);
+        }
+
+        if ($form_request_status == 'denied') {
+          $total_qty = $previous_qty + $prev_req_qty;
+          $game_inv_node->set('field_total_inventory', $total_qty);
+          $user_id = \Drupal::currentUser()->id();
+          $game_inv_node->setNewRevision(TRUE);
+          $game_inv_node->revision_log = '+'.abs($prev_req_qty).' '.$pc_name.' Denied by '.$fname. '(RID: '.$game_nid.')';
+          $game_inv_node->setRevisionCreationTime(REQUEST_TIME);
+          $game_inv_node->setRevisionUserId($user_id);
+        }
+
+        $game_inv_node->save();
+      }
+
+      foreach ($game_inv_query as $key => $value) {
+        $game_request_node = Node::load($game_nid);
+
+        if ($form_request_status == 'approved') {
+          $field_collection_item = FieldCollectionItem::load($value->item_id);
+          $field_collection_item->set('field_req_game_quantity', $form_request_quantity[$key]['field_req_game_quantity'][0]['value']);
+          $game_request_node->set('field_fo_remarks', $form_request_remarks);
+          $game_request_node->set('field_fo_status', 'approved');
+          $game_request_node->set('status', 1);
+        }
+
+        if ($form_request_status == 'denied') {
+          $game_request_node->set('field_fo_remarks', $form_request_remarks);
+          $game_request_node->set('field_fo_status', 'denied');
+          $game_request_node->set('status', 0);
+        }
+
+        $game_request_node->set('field_gr_approved_denied_by', \Drupal::currentUser()->id());
+        $game_request_node->set('field_gr_date_of_approval_denied', time());
+        $game_request_node->save();
+      }
+
+      $game_request_node = Node::load($game_nid);
+      $nid               =  $game_request_node->get('nid')->value;
+      $req_qty           =  $game_request_node->get('field_requested_quantity')->value;
+      $query = db_query("SELECT td.weight, SUM(fc3.field_req_game_quantity_value) as qty
+                          FROM tban_node__field_game_request_quantity as fc
+                          LEFT JOIN tban_field_collection_item__field_request_game_name as fc1 ON fc1.entity_id = fc.field_game_request_quantity_value
+                          LEFT JOIN tban_field_collection_item__field_req_game_quantity as fc3 ON fc3.entity_id = fc.field_game_request_quantity_value
+                          LEFT JOIN tban_node__field_category as gc ON gc.entity_id = fc1.field_request_game_name_target_id
+                          LEFT JOIN tban_taxonomy_term_field_data as td ON td.tid = gc.field_category_target_id
+                          WHERE fc.entity_id = {$nid}
+                          GROUP BY td.weight, td.name")->fetchAllKeyed();
+
+      foreach($query as $key=>$val){
+        $req_qty[1][$key] = $val;
+      }
+
+      $req_qty[1][6] = $req_qty[1][0] + $req_qty[1][1] + $req_qty[1][2] + $req_qty[1][3] + $req_qty[1][4] + $req_qty[1][5];
+
+      $requested_quantity                = [];
+      $requested_quantity[0]['value'][0] = [
+        'Strategy',
+        'Puzzle',
+        'Block',
+        'Alphabetical',
+        'Numerical',
+        'General',
+        'Total',
+      ];
+
+      $requested_quantity[0]['value'][1]        = $req_qty[1];
+      $requested_quantity[0]['format']          = '';
+      $requested_quantity[0]['caption']         = '';
+      $requested_quantity[0]['rebuild']['cols'] = 7;
+      $requested_quantity[0]['rebuild']['rows'] = 2;
+
+      $game_request_node->set('field_requested_quantity', $requested_quantity );
+      $game_request_node->save();
+
+
+      if ($form_request_status == 'approved') {
+        $im_query     = db_query("SELECT u.mail, f.field_first_name_value as fname
+                              FROM tban_users_field_data as u
+                              LEFT JOIN tban_user__roles as r ON u.uid = r.entity_id
+                              LEFT JOIN tban_user__field_first_name as f ON f.entity_id = u.uid
+                              WHERE r.roles_target_id = 'inventory_manager'")->fetchAll();
+
+        if (!empty($im_query)) {
+          foreach ($im_query as $r) {
+            $name     = $r->fname;
+            $to       = $r->mail;
+            $subject  = 'Game Request';
+            $body     = "<div style='width: 600px; margin: 0 auto; font-size: 14px; font-family: calibri; border: 1px solid #666;'>
+                          <div><img src='" . $base_url . "/sites/default/files/tb-logo_0.png' alt='TOYBANK' moz-do-not-send='true' width='200px' height='68px'></div>
+                           <div style='padding:20px;'>
+                             Hello $name, <br/><br/>
+                             <p>The Game Request has been generated successfully.
+                             Click <a href='" . $base_url . "/pending-request-details/$rid'>here</a> to view details.</p><br>
+                             Regards,<br/>
+                             Toybank<br/><br/>
+                             [ Note: This is system generated automated message please do not reply. ]
+                           </div>
+                         </div>";
+            $headers  = "From: no-reply@toybank.com\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            mail($to, $subject, $body, $headers);
+          }
+        }
+      }
+
+      drupal_set_message(t("Game Request (RID:$game_nid) has been mark as $form_request_status successfully."), 'status', TRUE);
+      $response = new RedirectResponse('/pending-game-requests');
+      $response->send();
+    }
+  }
+}
+
+/**
+ * Mark game request as packed.
+ */
+function mark_as_packed_validate(&$form, FormStateInterface $form_state) {
+  $form_packed_quantity = $form_state->getValue('form_field_field_packed_quantity');
+  $form_requested_quantity = $form_state->getValue('form_field_field_req_game_quantity');
+  //~ $count = count($form_packed_quantity);
+  $pack_qty = 0;
+
+  foreach($form_packed_quantity as $val) {
+    $pack_qty += $val['field_packed_quantity'][0]['value'];
+  }
+
+  if ($pack_qty < 1) {
+    $form_state->setErrorByName('form_field_field_packed_quantity', t('Total Packed Quantity must be greater than zero.'));
+  }
+
+  //~ $form_state->setErrorByName('form_field_field_packed_quantity', t('Not valid.'));
+ //~ //print_r($form_requested_quantity);exit;
+
+  //~ for($i=0; i<=$count; $i++) {
+    //~ $totalc = $form_request_qty[$i]['field_req_game_quantity'][$i]['value'] - $form_packed_quantity[$i]['field_packed_quantity'][$i]['value'];
+    //~ if ($totalc < 0) {
+
+    //~ }
+  //~ }
+
+}
+
+function mark_as_close(&$form, FormStateInterface $form_state) {
+  global $base_url;
+  $current_path         = \Drupal::service('path.current')->getPath();
+  $nid                  = explode('delivered-request-details/', $current_path);
+  $game_nid             = $nid[1];
+  $user_id              = \Drupal::currentUser()->id();
+  $form_closed_document = $form_state->getValue('close_game_request_document')[0];
+  $form_closed_description = $form_state->getValue('close_game_request_description');
+  $closed_date             = time();
+
+
+  if (!empty($game_nid)) {
+    $game_request_node = Node::load($game_nid);
+    $game_request_node->set('field_gr_closed_by', $user_id);
+    $game_request_node->set('field_gr_date_of_closed', $closed_date);
+    $game_request_node->set('field_documents_request_closed', $form_closed_document);
+    $game_request_node->set('field_description_request_closed', $form_closed_description);
+    $game_request_node->set('field_game_request_status', 'closed');
+
+    $user_id = \Drupal::currentUser()->id();
+    $game_request_node->setNewRevision(TRUE);
+    $game_request_node->setRevisionCreationTime(REQUEST_TIME);
+    $game_request_node->setRevisionUserId($user_id);
+
+    $game_request_node->save();
+  }
+  drupal_set_message(t("Game Request (RID:$game_nid) has been mark as Closed successfully."), 'status', TRUE);
+  $response = new RedirectResponse('/closed-game-requests');
+  $response->send();
+}
+
+
+function mark_as_packed(&$form, FormStateInterface $form_state) {
+  global $base_url;
+  $form_packed_quantity = $form_state->getValue('form_field_field_packed_quantity');
+  $form_request_status  = $form_state->getValue('form_field_field_request_status');
+  $current_path         = \Drupal::service('path.current')->getPath();
+  $nid                  = explode('pending-request-details/', $current_path);
+  $game_nid             = $nid[1];
+  $user_id = \Drupal::currentUser()->id();
+  $date = time();
+
+  if (!empty($game_nid)) {
+    //~ $game_inv_query = db_query("SELECT fc1.entity_id as item_id, gi.entity_id , rq.field_req_game_quantity_value as request_qty
+                                //~ FROM tban_node__field_game_request_quantity as fc
+                                //~ LEFT JOIN tban_field_collection_item__field_request_game_name as fc1 ON fc1.entity_id = fc.field_game_request_quantity_value
+                                //~ LEFT JOIN tban_field_collection_item__field_req_game_quantity as rq ON rq.entity_id = fc1.entity_id
+                                //~ LEFT JOIN tban_field_collection_item__field_packed_quantity as fc2 ON fc2.entity_id = fc.field_game_request_quantity_value
+                                //~ LEFT JOIN tban_node__field_inv_game_name as gi ON gi.field_inv_game_name_target_id = fc1.field_request_game_name_target_id
+                                //~ WHERE fc.entity_id = $game_nid ORDER BY fc1.entity_id")->fetchAll();
+    $game_inv_query = db_query("SELECT fc1.entity_id as item_id, gi.entity_id, rq.field_req_game_quantity_value as request_qty, td.name, nd.title
+                                FROM tban_node__field_game_request_quantity as fc
+                                LEFT JOIN tban_field_collection_item__field_request_game_name as fc1 ON fc1.entity_id = fc.field_game_request_quantity_value
+                                LEFT JOIN tban_node_field_data as nd ON nd.nid = fc1.field_request_game_name_target_id
+                                LEFT JOIN tban_node__field_category as cat ON cat.entity_id = fc1.field_request_game_name_target_id
+                                LEFT JOIN tban_taxonomy_term_field_data as td ON td.tid = cat.field_category_target_id
+                                LEFT JOIN tban_field_collection_item__field_req_game_quantity as rq ON rq.entity_id = fc1.entity_id
+                                LEFT JOIN tban_field_collection_item__field_packed_quantity as fc2 ON fc2.entity_id = fc.field_game_request_quantity_value
+                                LEFT JOIN tban_node__field_inv_game_name as gi ON gi.field_inv_game_name_target_id = fc1.field_request_game_name_target_id
+                                WHERE fc.entity_id = $game_nid ORDER BY td.weight, nd.title")->fetchAll();
+
+    if (!empty($game_inv_query)) {
+      foreach ($game_inv_query as $key => $value) {
+        $game_request_node = Node::load($game_nid);
+        $field_collection_item = FieldCollectionItem::load($value->item_id);
+        $field_collection_item->set('field_packed_quantity', $form_packed_quantity[$key]['field_packed_quantity'][0]['value']);
+
+        if (empty($form_packed_quantity[$key]['field_packed_quantity'][0]['value']) || $form_packed_quantity[$key]['field_packed_quantity'][0]['value'] == 0) {
+          $field_collection_item->set('field_request_status', 'not_found');
+        }
+        elseif ($value->request_qty == $form_packed_quantity[$key]['field_packed_quantity'][0]['value']) {
+          $field_collection_item->set('field_request_status', 'ok');
+        }
+        elseif ($value->request_qty > $form_packed_quantity[$key]['field_packed_quantity'][0]['value'] && $form_packed_quantity[$key]['field_packed_quantity'][0]['value']) {
+          $field_collection_item->set('field_request_status', 'partial');
+        }
+
+        if ($value->request_qty > $form_packed_quantity[$key]['field_packed_quantity'][0]['value']) {
+          $req_qty_diff = $value->request_qty - $form_packed_quantity[$key]['field_packed_quantity'][0]['value'];
+
+          $pc_query = db_query("SELECT nd.title as name, pcc.field_playc_value as code
+                                FROM tban_node__field_play_center as pc
+                                LEFT JOIN tban_node_field_data as nd ON nd.nid = pc.field_play_center_target_id
+                                LEFT JOIN tban_node__field_playc as pcc ON pcc.entity_id = nd.nid
+                                WHERE pc.entity_id = {$game_nid}")->fetchAll();
+          if ($pc_query) {
+            $pc_name = $pc_query[0]->name;
+          }
+
+          if ($user_id) {
+            $userName = db_query("SELECT CONCAT(field_first_name_value, ' ', field_last_name_value) as name FROM tban_user__field_first_name as f
+                                  LEFT JOIN tban_user__field_last_name as l ON l.entity_id = f.entity_id
+                                  WHERE f.entity_id = $user_id")->fetchAssoc();
+            if ($userName) {
+              $fname = $userName['name'];
+            }
+          }
+
+          $game_inv_node = Node::load($value->entity_id);
+          $previous_qty  = $game_inv_node->get('field_total_inventory')->value;
+          $total_qty    = $previous_qty + $req_qty_diff;
+          $game_inv_node->set('field_total_inventory', $total_qty);
+
+          $game_inv_node->setNewRevision(TRUE);
+          $game_inv_node->revision_log = '+'.abs($req_qty_diff).' '.$pc_name.' Altered by '. $fname . ' (RID: '.$game_nid.')';
+          $game_inv_node->setRevisionCreationTime(REQUEST_TIME);
+          $game_inv_node->setRevisionUserId($user_id);
+
+          $game_inv_node->save();
+        }
+
+        //~ $field_collection_item->set('field_request_status', $form_request_status[$key]['field_request_status'][0]['value']);
+        $uid = $game_request_node->getOwnerId();
+        $game_request_node->set('field_gr_packed_by', $user_id);
+        $game_request_node->set('field_gr_date_of_packed', $date);
+        $game_request_node->set('field_game_request_status', 'packed');
+        $game_request_node->save();
+      }
+
+      // Send mail.
+      if (!empty($uid)) {
+        $sql = db_query("SELECT DISTINCT u.field_associated_field_officer_target_id as uid, us.mail, fn.field_first_name_value as fname
+                          FROM tban_node__field_associated_field_officer as u
+                          LEFT JOIN tban_users_field_data as us ON us.uid = u.field_associated_field_officer_target_id
+                          LEFT JOIN tban_user__field_first_name as fn ON fn.entity_id = us.uid
+                          WHERE (u.entity_id IN (SELECT entity_id FROM tban_node__field_associated_field_officer WHERE field_associated_field_officer_target_id={$uid}))")->fetchAll();
+
+        if (!empty($sql)) {
+          foreach ($sql as $r) {
+            $name     = $r->fname;
+            $to       = $r->mail;
+            $subject  = 'Packed Game Request';
+            $body     = "<div style='width: 600px; margin: 0 auto; font-size: 14px; font-family: calibri; border: 1px solid #666;'>
+                          <div><img src='" . $base_url . "/sites/default/files/tb-logo_0.png' alt='TOYBANK' moz-do-not-send='true' width='300px' height='68px'></div>
+                          <div style='padding:20px;'>
+                            Dear $name, <br/><br/>
+                            <p>The Game Request has been Packed successfully.
+                            Click <a href='" . $base_url . "/user/login?destination=/packed-request-details/$game_nid'>here</a> to view details.</p><br>
+                            Regards,<br/>
+                            Team Toybank<br/><br/>
+                            [ Note: This is system generated automated message please do not reply ]
+                          </div>
+                        </div>";
+            $headers  = "From: no-reply@toybank.com\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            mail($to, $subject, $body, $headers);
+          }
+        }
+      }
+
+      drupal_set_message(t("Game Request (RID:$game_nid) has been mark as packed successfully."), 'status', TRUE);
+      $response = new RedirectResponse('/packed-game-requests');
+      $response->send();
+    }
+  }
+}
+
+function partner_form_custom_validate($form, FormStateInterface $form_state) {
+  $partner_code  = $form_state->getValue('field_partner_code')[0]['value'];
+  $nid           = $form_state->getformObject()->getEntity()->id();
+
+  if ($partner_code) {
+      $andQuery = "";
+      if ($nid) {
+          $andQuery = "AND entity_id !=$nid";
+      }
+      $query_result = db_query("SELECT entity_id FROM tban_node__field_partner_code WHERE field_partner_code_value='$partner_code' $andQuery")->fetchAssoc();
+    if (!empty($query_result)) {
+          $form_state->setErrorByName('field_partner_code', t('This Partner code already taken.'));
+      }
+  }
+}
+
+function play_center_form_custom_validate($form, FormStateInterface $form_state) {
+  $playcenter_code  = $form_state->getValue('field_playc')[0]['value'];
+  $nid              = $form_state->getformObject()->getEntity()->id();
+  if ($playcenter_code) {
+      $andQuery = "";
+      if ($nid) {
+          $andQuery = "AND entity_id !=$nid";
+      }
+      $query_result = db_query("SELECT entity_id FROM tban_node__field_playc WHERE field_playc_value='$playcenter_code' $andQuery")->fetchAssoc();
+    if (!empty($query_result)) {
+          $form_state->setErrorByName('field_playc',t('This Play center code already taken.'));
+
+
+      }
+  }
+}

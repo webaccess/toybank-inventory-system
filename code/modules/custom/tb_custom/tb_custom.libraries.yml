@@ -1,0 +1,7 @@
+toybank_customJS:
+  version: 1.x
+  js:
+    js/tb_custom.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

@@ -1,0 +1,7 @@
+field.widget.third_party.datetimehideseconds:
+  type: mapping
+  label: DateTime Hide Seconds
+  mapping:
+    hide:
+      type: boolean
+      label: 'Hide seconds'
