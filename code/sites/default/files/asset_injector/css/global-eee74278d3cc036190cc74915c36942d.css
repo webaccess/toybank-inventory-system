@@ -1,0 +1,1794 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800&display=swap');
+body {
+    font-family: 'Raleway', sans-serif; font-size: 13px; letter-spacing: 0.4px;}
+td a {
+    color: #000; }
+#block-mainnavigation {
+    width: 60px;
+    height: 60px; /* extra */
+    float: right;}
+#block-bootstrap-main-menu {
+    width: calc(96% - 305px);
+    /*height: 60px;
+    overflow: hidden;*/
+    float: left;}
+#superfish-main { /* extra */
+    height: 60px;
+    display:inline-flex;
+}
+#block-welcomeuserblock {
+	display: inline-block;
+	/* width: 11%; */
+	text-align: left;
+	/* margin-top: 15px; */
+	/* padding: 0; */
+	/* margin-right: 15px; */
+}
+div.wlcm-msg {
+	color: #fff;
+	/* padding: 18px 41px !important; */
+	font-weight: 500;
+	font-size: 11px;
+	margin-top: 4px;
+	/* text-align: left; */
+}
+#superfish-main-toggle {
+    background-image: url(/sites/default/files/pictures/nav.png);
+    height: 60px;
+    background-repeat: no-repeat;
+    display: block;
+    width: 60px;
+    float: right; background-position: center;}
+.sf-accordion-toggle.sf-style-none {
+    display: block;
+    height: 60px;}
+ul#superfish-main-accordion {
+    width: 200px;
+    position: absolute;
+    right: 0;
+    background-color: #333;}
+.sf-has-clone-parent li {
+    background: #555 !important;}
+.sf-menu li a, ul.dropdown-menu a {
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px !important;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-family: Raleway;
+    padding: 1em 1.5em;
+    border-bottom: 1px solid #666;}
+ul.dropdown-menu .last a {
+    border-bottom: 0px;}
+#superfish-main-toggle span {
+    display: none;}
+.sf-menu a:hover, .sf-menu a.is-active, ul.dropdown-menu a:hover, .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus, .sf-menu > .active > a {
+    background-color: #fcc900;
+    color: #444 !important;
+    text-decoration: none;}
+.text-full, .form-control:focus {
+	border: 1px solid #ffd87f;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(244, 209, 0, 0.6);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(244, 209, 0, 0.6);}
+.text-full, .form-control { font-size: 13px;
+    border-radius: 0px;
+    -webkit-box-shadow: inset 0px 0px 0px;
+	  box-shadow: inset 0 0px 0px;
+	  border-width: 1px;
+    border-color: /*transparent transparent*/ #ccc /*transparent;*/}
+.form-select { border: 1px solid #ccc; }
+.text-full:focus, .text-full:hover, .form-control:hover, .form-control:hover {border: 1px solid #ffd87f;}
+.tabs-left > .tab-content, .tabs-right > .tab-content, .input-group-addon {border-radius: 0px;}
+.fieldset-legend, label {
+	font-size: 14px;
+	font-weight: 700; }
+.user-login-form {
+	max-width: 350px;
+	margin: auto;
+	width: 90%;}
+.password-strength__indicator {
+	background-color: #fcc900;}
+.footer a {
+	color: #fff;}
+.navbar-btn {
+    background-color: #fcc900;
+    padding: 0px 23px !important;
+    height: 60px;
+	margin: 0px !important;}
+.btn-success:active:hover, .btn-success.active:hover, .open > .dropdown-toggle.btn-success:hover, .btn-success:active:focus, .btn-success.active:focus, .open > .dropdown-toggle.btn-success:focus, .btn-success:active.focus, .btn-success.active.focus, .open > .dropdown-toggle.btn-success.focus {
+	color: #fff;
+	background-color: #000 !important;
+    border-color: #000 !important;}
+.open > .dropdown-menu {
+    left: auto !important;
+    padding: 0px !important;}
+.dropdown-menu li {
+    background: #555 !important;}
+.expanded.dropdown.active.active-trail.open {
+    position: static;}
+.btn-info:hover {
+	color: #fff;
+	background-color: #000 !important;
+	border-color: #000 !important;}
+.grp-no-of-kids {
+    padding-bottom: 20px;
+    -webkit-box-shadow: 0 0px 0px;
+    box-shadow: 0 0px 0px;}
+.field--type-entity-reference th.field-label, .field--type-entity-reference th.tabledrag-hide {
+    border: 0px !important; }
+option::selected {
+    background-color: #fcc900 !important;    }
+.btn, .inv_issue_btn {
+  margin-right:15px;
+    display: inline-block;
+    margin-bottom: 0;
+    text-align: center;
+    vertical-align: middle;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 0px !important;
+    color: #000;
+    background-color: #fcc900;
+    border-color: #daaf06;
+    font-weight: 700;}
+
+.field--type-datetime .panel-heading {
+      color: #000 !important;
+      background-color: #eee !important;
+      border-color: #ddd;
+      font-weight: 700;
+      border-radius: 0px !important;
+}
+.field--type-datetime .panel-title {
+color:#333;
+font-size:13px;
+}
+
+/*.panel-default > .panel-heading {
+    color: #fff !important;
+    background-color: #000000;
+    border-color: #ddd;
+    font-weight: 700;
+    border-radius: 0px !important;}*/
+.btn:hover, .btn:focus, .btn.focus, .inv_issue_btn:hover, .inv_issue_btn:focus, .inv_issue_btn.focus   {
+    color: #fff !important;
+    background-color: #000 !important;
+    text-decoration: none; border: 1px solid #000;}
+.navbar .container-fluid {
+	background-color: #333333;
+    padding-left: 0px !important;
+    padding-right: 0px !important;}
+.navbar-nav > li > a {
+	padding: 20px 10px 20px 10px;
+	margin-right: 1px;
+	color: #fff !important;
+	font-weight: 700;
+	font-size: 12px;
+	letter-spacing: 1px;
+	text-transform: uppercase;}
+.reqty_gen_req { height: 25px; padding: 2px 12px; }
+.btn_final_generate_Request { float:left;}
+.tbl_generate_request th, .pc_generate_request th, .tbl_inventory th, .tbl_game_details th, .tbl_audit_issue th {
+	vertical-align: bottom;
+	border: 1px solid #ddd;
+	background-color: #eee; padding: 10px !important;}
+.pc_generate_request .btn-default, .example-form .btn-default {margin-top: 0px !important;}
+.pc_generate_request .btn-default { 
+    background-color: transparent !important;
+	border: 0 transparent;
+	text-decoration: underline;}
+.pc_generate_request td, .tbl_generate_request td, .tbl_inventory td, .tbl_game_details td, .tbl_audit_issue td { 
+    border: 1px solid #ddd; background-color: #fefefe; padding: 10px !important;}
+.btn_generate_Request { 
+    margin: auto;}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > .active > a {
+    background-color: #fcc900;
+    color: #444 !important;}
+.menu--new-activity-record,.menu--type-of-school, .menu--type-of-kids li, .menu--kids-background li, .menu--type-of-center li, .menu--all-master-links-menu li, .menu--kbi-master li, .menu--manage-user-master li, .menu--manage-inventory-master li, .menu--partner-master li, .menu--source-pickup-master li, .menu--cluster-master li, .menu--kb li, .menu--partner-type li {
+    float: right; 
+    margin-left: 20px;}
+#block-typeofschool, #block-typeofkids, #block-kidsbackground, #block-typeofcenter, #block-allmasterlinksmenu-2, #block-kbimaster, #block-manageusermaster, #block-newactivityrecord, #block-partnermaster, #block-manageinventorymaster, #block-sourcepickupmaster, #block-clustermaster, #block-kbicategory, #block-partnertype{
+	float: right;
+	margin-top: -60px;
+  width: 300px; }
+#block-addactivitytype {
+  float: right;
+	margin-top: -60px;
+  width: auto; 
+}
+.menu--new-activity-record li a, .menu--type-of-school li a,.menu--type-of-kids li a, .menu--kids-background li a, .menu--type-of-center li a, .menu--all-master-links-menu li a, .menu--kbi-master li a, .menu--manage-user-master li a, .menu--add-activity-type li a,.menu--manage-inventory-master li a, .menu--partner-master li a, .menu--source-pickup-master li a, .menu--cluster-master li a, .menu--kb li a, .menu--partner-type li a {
+	color: #000;
+	text-decoration: none;
+	font-weight: 700;
+	font-size: 13px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+    display: inline-block;
+    border: 1px solid #ccc; }
+.menu--new-activity-record li a:hover, .menu--type-of-school li a:hover, .menu--type-of-kids li a:hover, .menu--kids-background li a:hover, .menu--type-of-center li a:hover, .menu--all-master-links-menu li a:hover, .menu--kbi-master li a:hover, .menu--manage-user-master li a:hover, .menu--add-activity-type li a:hover, .menu--manage-inventory-master li a:hover, .menu--partner-master li a:hover, .menu--source-pickup-master li a:hover, .menu--cluster-master li a:hover, .menu--kb li a:hover, .menu--partner-type li a:hover
+.menu--new-activity-record li a:focus, .menu--type-of-school li a:focus, .menu--type-of-kids li a:focus, .menu--kids-background li a:focus, .menu--type-of-center li a:focus, .menu--all-master-links-menu li a:focus, .menu--kbi-master li a:focus, .menu--manage-user-master li a:focus, .menu--add-activity-type li a:focus, .menu--manage-inventory-master li a:focus, .menu--partner-master li a:focus, .menu--source-pickup-master li a:focus, .menu--cluster-master li a:focus, .menu--kb li a:focus, .menu--partner-type li a:focus  {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 1px solid #000 !important;}
+.path-generate-request .control-label, .example-form .control-label { margin-right: 6px; /* width: 150px; */}
+.path-generate-request .select-wrapper, .example-form .select-wrapper  { width: auto;} 
+.path-generate-request .btn-default {
+	border-color: #c89d00;
+	background-color: #fcc900;
+  font-weight: 600;
+vertical-align: top; }
+td.views-field-nothing a {
+	text-transform: capitalize;
+	font-size: 13px;}
+#block-bootstrap-account-menu .navbar-nav > li > a {
+	font-weight: 500;
+  	padding: 10px 20px;
+  	font-size: 12px;}
+.navbar-nav {
+	margin-left: 30px;}
+.page-header {
+	margin-top: 0;
+	font-size: 24px;
+	font-weight: 700;
+	border-bottom: 0px;
+	text-transform: capitalize;}
+.region.region-header {
+	margin-left: -15px;
+	margin-right: -15px;
+	background-color: #f5f5f5;
+	height: 84px;
+	padding: 25px 20px 20px 25px;
+	border-bottom: 1px solid #eee;}
+.main-container {
+	margin-top: -4px;}
+.alert.alert-info.messages.info.region.region-help {
+	margin-top: 20px;}
+.table-responsive .table > thead > tr > th {
+	vertical-align: bottom;
+	border-bottom: 1px solid #ddd;
+	background-color: #eee;}
+.table-responsive .table {
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 20px;
+	border: 1px solid #ddd;}
+.footer.container-fluid {
+	background-color: #333;
+	padding: 2px;}
+.select_fieldofficer, .select_playcenter, .startDate, .endDate { 
+    display: inline-block; }
+.region.region-content, .user-logged-in .region.region-content {
+	width: 90%;
+	max-width: 1280px;
+    margin: 25px auto 0px;
+    background-image:none !important}
+.views-exposed-form, .example-form {
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+	padding: 20px 17px 0px 17px;
+    margin-bottom: 20px;}
+.form-inline .form-group, .form-item-playcenter, .form-item-start-date, .form-item-end-date, .form-item-fieldofficer {
+	margin-right: 12px; margin-bottom: 20px !important;}
+.view_wrappers_generate_request, .view_wrappers_playcenter_generate_request, .view_wrappers_game_details {
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 25px;}
+.control-label {
+	margin-right: 6px;}
+input {
+    line-height: 110% !important;}
+.no-of-kids-lbl h3 {
+   /* margin-left: 56px;*/
+    text-transform: uppercase;
+    font-weight: 300;
+    color: #000;
+    font-size: 24px;}
+/*#no-of-kids-lbl {
+    background-image: url(/sites/default/files/pictures/boy.png);
+    background-repeat: no-repeat;
+    padding-top: 10px;}
+#no-of-kids-lbl--2 {
+    background-image: url(/sites/default/files/pictures/girl.png);
+    background-repeat: no-repeat;
+    padding-top: 10px;}*/
+.btn-info, .example-form .btn-info, .inv_issue_btn {
+	color: #000;
+	background-color: #fcc900;
+	border: 1px solid #daaf06;
+    font-weight: 700;
+    vertical-align: top;
+}
+.report-print-wrapper button {
+    color: #000;
+	background-color: #fcc900;
+	border: 1px solid #daaf06;
+    font-weight: 700;
+    margin:20px 0px !important;
+    padding:6px 12px !important;
+}    
+.footer .nav > li > a {
+	position: relative;
+	display: inline-block;
+	padding: 10px 15px;}
+.footer .nav > li > a:hover, .nav > li > a:focus {
+	text-decoration: none;
+	background-color: transparent;
+	color: #daaf06;}
+#block-bootstrap-footer {
+    float: left;}
+#block-bootstrap-account-menu {
+    float: right;}
+.navbar-right {
+	margin-right: auto !important;}
+#block-addmasterslinks {
+    float: right;}
+.sublink-but a {
+	color: #444;
+	background-color: #fcc900;
+	font-weight: 700;
+	padding: 10px;
+	border: 1px solid #daaf06;
+	border-radius: 0px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;}
+.btn-sign-in-google.align-center {
+    background-color: #286090;
+    width: 12%;
+  margin-top: -37px;}
+  /*#edit-field-other-attendants-wrapper {
+    width: 47%;
+}*/
+.user-logged-in .field--name-field-last-name, .user-logged-in .field--name-field-first-name, .user-logged-in .field--name-field-l, .user-logged-in #edit-field-l-wrapper, .user-logged-in #edit-field-first-name-wrapper, .page-node-type-record-activity .field--name-field-no-of-kids-attendents, .page-node-type-record-activity .field--name-field-other-attendents, .page-node-type-record-activity .field--name-field-play-center-record, .page-node-type-record-activity .field--name-field-reportig-fo, .page-node-type-record-activity .field--name-field-volunteer-attendents, .page-node-type-record-activity .field--name-field-activity, .page-node-type-record-activity .field--name-field-activity-type, .page-node-type-record-activity .field--name-field-remarks,.page-node-type-record-activity .field--name-field-date-time, /*.field--name-field-associated-field-officer,*/ .page-node-type-source-pickup .field--name-field-source, .page-node-type-source-pickup .field--name-field-date-of-pickup-sp, /*.page-node-type-partner .field--label-inline,*/ .page-node-type-kbi .field--label-inline, /*.user-logged-in .field--label-inline,*/ .page-node-type-play-center .field--label-inline, .node-inventory-edit-form .field--name-field-source-pickup-title, .node-inventory-edit-form .field--name-field-donated-purchased, .node-inventory-edit-form .form-item-inventory-entered-by, .node-inventory-edit-form .field--name-field-vendor-taxo, #edit-field-reportig-fo-wrapper, #edit-field-play-center-record-wrapper, #edit-field-date-time-wrapper, #edit-field-activity-type-wrapper, #edit-field-no-of-kids-attendents-wrapper, /*#edit-field-other-attendants-wrapper,*/ #edit-field-volunteer-attendents-wrapper, .js-form-item-name.form-group, .page-node-type-record-activity .field--name-field-other-attendants, .page-node-type-record-activity .field--name-field-other-attendees, #edit-field-other-attendants-wrapper
+{
+	width: 47%;
+	display: inline-block;
+	vertical-align: bottom;
+	/* margin-left: 1%; */
+	/*margin-right: 1%;*/ 
+	margin-bottom: 15px; 
+	/*border-bottom: 1px solid #eee;*/
+	padding-bottom: 8px;
+  vertical-align:top;
+  padding-left: 0px;
+  
+}
+.page-node-type-record-activity .field--name-field-no-of-kids-attendents .field--label, .page-node-type-record-activity .field--name-field-other-attendents .field--label, .page-node-type-record-activity .field--name-field-play-center-record .field--label, .page-node-type-record-activity .field--name-field-reportig-fo .field--label, 
+.page-node-type-record-activity .field--name-field-volunteer-attendents .field--label, .page-node-type-record-activity .field--name-field-date-time .field--label, .page-node-type-record-activity .field--name-field-activity .field--label, .field--name-field-associated-field-officer .field--label, .page-node-type-source-pickup .field--name-field-source .field--label, .page-node-type-source-pickup .field--name-field-date-of-pickup-sp .field--label, /*.page-node-type-partner .field--label,*/ .page-node-type-kbi .field--label, .user-logged-in .field--label, .page-node-type-play-center .field--label {
+	width: 250px; display: inline-block; vertical-align: top; padding-top: 2px; }
+/*.path-user .field.field--name-body.field--type-text-with-summary.field--label-hidden.field--item {
+    margin-left: 50px;
+    text-align: left;
+    width: 150px;}*/
+/*.path-user*/ .user-login-form {
+    max-width: 1000px;
+    width: 90%;
+    padding-left: 50px;
+    padding-top: 166px;
+    padding-bottom: 90px;
+    background-image: url(/sites/default/files/pictures/toybank-banner.png);
+    background-repeat: no-repeat;}
+.path-user .btn-sign-in-google.align-center {
+    background-color: #286090;
+    width: 150px;
+    margin-top: -70px;
+    margin-bottom: 50px;
+    margin-left: 50px;}
+section#block-googlemenu {
+    max-width: 1000px;
+    margin: auto;
+    width: 90%;}
+.user-login-form .form-item-name, .user-login-form .form-type-password, .user-login-form .captcha {
+    width: 270px !important; margin: 0px 0px 25px 0px;}
+.field--items, .field--item  {
+   /* font-size: 16px;*/ display: inline-block; }
+.field--items .field--item  {
+    display: block;}
+/*.field--name-field-upload-documents-partner { 
+	width:96.3% !important;
+    vertical-align: bottom;
+    /* margin-left: 1%;
+    margin-right: 1%;
+	border-radius: 0px;}*/
+.page-node-type-partner footer {
+	background-color: #fcc900;
+	padding: 5px;
+	margin-bottom: 21px;
+	width: 96.3%;
+	/* margin-left: 1%; */
+	margin-right: 1%;
+	border: 1px solid #d1ad1c;}
+.page-node-type-partner article {
+	display: inline-block;}  
+.path-packed-game-requests .form-inline .form-control, .path-pending-game-requests .form-inline .form-control, .path-dispatched-game-requests .form-inline .form-control, .path-inventory-audit .form-inline .form-control, .path-type-of .form-inline .form-control, .path-type-of-center .form-inline .form-control, .path-kids-background .form-inline .form-control, .path-kbi-category .form-inline .form-control, .path-type-of-school .form-inline .form-control, .path-manage-users .form-inline .form-control, .path-playcenter .form-inline .form-control, .path-kbi .form-inline .form-control, .path-partner .form-inline .form-control, .path-source-pickup .form-inline .form-control, .path-cluster .form-inline .form-control, .path-all-master .form-inline .form-control, .path-activity-listing .form-inline .form-control, .path-generate-request .form-inline .form-control, .path-inventory-listing .form-inline .form-control, .path-inventory-ad .form-inline .form-control, .path-type-of-activity .form-inline .form-control, .path-partner-type .form-inline .form-control  {
+    border: 1px solid #ccc;}
+
+/* 1 Column desktop */
+.node-inventory-form .field--name-field-multiple-games, .password-suggestions, #edit-field-address-pc-wrapper, .form-item-field-contact-details-0-value, .grp-no-of-kids, .form-type-vertical-tabs, .node-form .form-actions, .field--name-field-kbi-description, .field--name-field-partner-contact-details, /*.field--name-field-upload-documents-partner,*/ .field--name-field-description-partner, /*.field--name-field-summary-of-location,*/ /*#edit-field-associated-field-officer-wrapper,*/ .field--name-name, .field--name-description, #edit-relations, /*#edit-langcode-wrapper,*/ .taxonomy-term-kbi-category-form .form-actions {
+    width:96.3%;
+    vertical-align: top;
+    /* margin-left: 1%; */
+    margin-right: 1%;
+    border-radius: 0px;}
+
+/* 2 Column desktop */
+/*.navbar-is-fixed-top .field--name-field-similar-game-family,*/ .navbar-is-fixed-top .field--name-field-sub-catgeory, .navbar-is-fixed-top .field--name-field-category, .navbar-is-fixed-top .field--name-field-manufacturer, .navbar-is-fixed-top .field--name-field-game-code, .node-inventory-form .field--name-field-vendor, .node-inventory-form .field--name-field-inv-entered-by, .node-inventory-form .field--name-field-donated-purchased, .node-inventory-form .field--name-field-source-pickup-title,  /*#edit-title-wrapper,*/ #edit-field-playc-wrapper, .field--name-field-latitude, .field--name-field-longitude, .no-of-kids-lbl, /*.field--name-field-partner,*/ /*.field--name-field-cluster, */#edit-field-kids-background-wrapper, /*#edit-field-type-of-school-wrapper,*/
+#edit-field-first-name-wrapper, #edit-field-l-wrapper, .form-type-email, /*.form-item-name,*/ .form-item-pass-pass1, .form-item-pass-pass2, .field--name-field-kbi-category, .field--name-field-kbi-category-other, /*.field--widget-language-select,*/
+/*.field--name-field-partner-code, #edit-title-wrapper,*/ #edit-field-summary-of-location-wrapper, .form-item-game-added-date, .form-item-game-added-by, .field--name-field-game-status, .field--name-field-game-kbis, /*.field--name-field-similar-game-family,*/ .node-inventory-form .field--name-field-vendor-taxo, .node-inventory-form .field--name-field-other-vendor, .node-inventory-form .field--name-field-center-code, .form-item-roles, #edit-status--wrapper, /*.field--name-field-kids,*/ .js-form-item-current-pass,.field--name-title {
+	width: 47%;
+	display: inline-block;
+    margin-right: 1%;
+    vertical-align: top;
+    /* margin-left: 1%;*/}
+    
+
+/* 3 Column desktop */
+/*#edit-field-ty-wrapper,*/ #edit-field-start-date-wrapper, #edit-field-close-date-wrapper, .field--name-field-start-date, .field--name-field-status, .field--name-field-remark, #edit-field-ty-wrappery, /*#edit-field-type-of-center-tax-wrapper,*/ 
+/*#edit-status--wrapper,*/ #edit-roles--wrapper, .form-item-notify/*, #edit-field-type-of-kids-other-wrapper, #edit-field-type-of-school-other-wrapper*/ {
+	width: 30.5%;
+	display: inline-block;
+    margin-right: 1%;
+    vertical-align: top;
+    /* margin-left: 1%;*/} 
+
+#edit-field-no-of-kids-session-wrapper{
+  width: 26.5%;
+  display: inline-block;
+  margin-right: 1%;
+  margin-top:9px;
+  vertical-align: top;
+  /* margin-left: 1%;*/} 
+
+#edit-field-no-of-kids-session-wrapper label {
+    margin-bottom: 5px;
+  }
+/* 4 Column desktop */
+#edit-field-date-of-pickup-sp-wrapper, #edit-field-source-wrapper, #edit-field-status-source-pickup-wrapper, #edit-field-quality-source-pickup-wrapper {
+	width: 22.3%;
+	display: inline-block;
+    margin-right: 1%;
+    vertical-align: top;
+    /*margin-left: 1%;*/}
+.field-multiple-table {
+	border: 1px solid #ccc;
+	border-radius: 0px !important;
+    border-collapse: initial;
+    margin-bottom: 10px;}
+
+.vertical-tabs {display: none;}
+/*added css on 23/10 */
+.div_inv, .div_pc_inv {
+	cursor: pointer !important;
+	text-decoration: underline !important;
+	font-family: /*'Raleway', sans-serif*/ verdana !important;
+	font-size: 12px !important;
+}
+.grid3_wrapper_table .table-responsive {
+  display: inline-block;
+  margin-left: 0px;
+  margin-right: 0px;
+  vertical-align: top;
+  margin-left: -4px;
+}
+.selected {
+	background-color: none !important;
+}
+.grid3_wrapper_table .table-responsive .select-all {
+	padding: 0px 0px 5px 9px !important;
+}
+.grid3_wrapper_table .table-responsive td {
+	height: 42px !important;
+}
+.quick-contact__form {
+	margin-top: 25px;
+  padding-left: 0px;
+  /*overflow:auto !important;*/
+}
+.inv_issue_btn {
+	margin-top: 20px;
+}
+.table > tbody > tr > td {
+  vertical-align: middle !important;
+}
+.form-wrapper .quick-contact__form {
+  margin-top: 0px;
+}
+.path-inventory-audit .quick-contact__form {
+    margin-left: -18px; 
+}
+.back-but {
+  text-align: right;
+  width: 100%;
+  display: block;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}
+.path-node .tabs--primary.nav.nav-tabs, .path-user .tabs--primary.nav.nav-tabs, .path-taxonomy .tabs--primary.nav.nav-tabs, .path-node .tabledrag-toggle-weight,/*.user-logged-in .alert,*/ .user-cancel-form .form-item-user-cancel-confirm {
+  display: none !important;
+}
+#edit-field-primary-check .form-item.js-form-item.form-type-checkbox {
+	width: 20%;
+	display: inline-block;
+}
+#edit-field-primary-check {
+	margin: auto;
+	/*border-bottom: 1px solid #ccc;*/
+}
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+	color: #000;
+	background-color: #fcc900;
+	border-color: #daaf06;
+}
+/*dispatch-sheet-report */
+.dr-header-left, .dr-footer-left {
+	float: left;
+}
+.dr-header-right, .dr-footer-right{
+    float: right;
+    line-height: 26px;
+    width: 35%;
+}
+.dr-header-right > div:nth-child(1) {
+	font-weight: bold;
+}
+.dispatch-report-footer {
+	margin-top: 25px;
+	text-align: center;
+}
+.dispatch-report-header {
+	display: block;
+	position: relative;
+	min-height: 90px;
+}
+.category-count {
+	margin-right: 34px;
+}
+.dr-footer-heading {
+    font-weight: 700;
+    font-size: 15px;
+    margin-top: 30px;
+    min-height: 119px;
+    border-top: 1px solid #000;
+    padding-top: 20px;
+}
+.logout-section .glyphicon.glyphicon-log-out {
+  color: #fff;
+  padding-top: 20px;
+}
+.node-inventory-form .btn-danger, .node-inventory-edit-form .btn-danger, .page-node-type-play-center #field-upload-documents-playcen-values .btn-danger, .page-node-type-partner #field-upload-documents-partner-values .btn-danger, .field--type-field-collection .btn-danger {
+  color: #fff !important;
+  background-color: #d9534f !important;
+  border-color: #d43f3a !important;
+}
+.node-inventory-form .panel-title, .node-inventory-edit-form .panel-title  {
+  display: block;
+  margin: -12px -16px;
+  padding: 5px 10px;
+}
+.node-inventory-form .field--name-field-game-name, .node-inventory-edit-form .field--name-field-game-name {
+	width: 40%;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 25px;
+	margin-bottom: 0px;
+	margin-top: 8px;
+}
+.node-inventory-form .field--name-field-quantity, .node-inventory-edit-form .field--name-field-quantity {
+	display: inline-block;
+	vertical-align: text-bottom;
+	width: 20%;
+	margin-top: 8px;
+}
+.node-inventory-form .field--type-field-collection .form-actions {
+	width: 25%;
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 30px;
+}
+
+.node-inventory-form .has-multiple-fields-remove-button {
+	padding: 0px !important;
+}
+
+.node-inventory-form .field--name-field-game-name .form-group {
+	margin-bottom: 0px !important;
+}
+.node-inventory-form .field--name-field-quantity label {
+	margin-bottom: 5px !important;
+}
+.node-inventory-form .field--name-field-game-name table, 
+.node-inventory-edit-form .field--name-field-game-name table {
+  margin-bottom:0px !important;
+}
+/*.node-inventory-form .field--name-field-game-name .select-wrapper,*/
+.node-inventory-edit-form .field--name-field-game-name .select-wrapper {
+  display:none !important;
+} 
+.node-cluster-form .field-multiple-table {border:none !important;}
+.node-cluster-form .field-multiple-table
+{
+ /*width: 47%;*/
+ display: inline-block;}
+ #edit-field-multiple-games-wrapper thead .inline-entity-form-node-label {
+  display: none !important; 
+ }
+ .reason-denied {
+    color: #ff0000;
+    font-weight: bold;
+    display: inline;
+    margin-right: 5px;
+}
+/* add inventory form*/
+.field--name-field-game-name .panel-heading {
+    display: inline-block;
+    width: 25%;
+}
+.field--name-field-game-name .panel-default > .panel-heading
+{
+        color: #000 !important;
+        background-color: transparent;
+        border-color: transparent;
+        font-weight: 700;
+        border-radius: 0px !important;
+}
+.field--name-field-game-name .panel-body {
+    padding: 0px;
+    width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    padding-left:7px;
+}
+.field--name-field-game-name table td.inline-entity-form-node-label {
+    background-color: #fff;
+    border-color: transparent transparent #ccc transparent !important;
+}
+.field--name-field-game-name .panel {
+   /* margin-bottom: 20px;*/
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.form-item-field-multiple-games-0-field-game-name-actions-bundle.select-wrapper {
+    display: none !important;
+}
+.input-group-addon {border:none !important;}
+/*end of inventory form*/
+#field-multiple-games-values .panel-heading {
+  display: none !important;
+}
+#edit-field-multiple-games-wrapper table .panel-heading {
+  display: none !important;
+}
+#curr-inv-status, #addstock_wrapper {
+  overflow: auto;
+}
+a.mobile-logout {
+  display: none !important;
+}
+/**** media section */
+
+@media screen and (min-width: 320px) and (max-width: 480px) {
+    .custom-feed-icon {margin-bottom: 15px;}
+   .library-followup-form .input-group {width:100% !important;}
+  .node-inventory-form .field--type-field-collection .form-actions {
+    margin-top: 0px;
+  }
+  .node-inventory-form .btn-danger, .node-inventory-edit-form .btn-danger {
+    margin-bottom: 8px;
+  }
+  .node-inventory-form .field--type-field-collection .form-actions {
+    margin-top: 0px;
+  }
+  .node-inventory-form .btn-danger, .node-inventory-edit-form .btn-danger {
+    margin-bottom: 8px;
+  }
+  .path-inventory-listing .form-inline .select-wrapper {
+    width: 100% !important;
+  }
+  /* .path-generate-request .sticky-header,  */
+  .path-pending-request-details .sticky-header, .path-packed-request-details .sticky-header, .path-dispatched-request-details .sticky-header, .path-delivered-request-details .sticky-header, .path-closed-request-details .sticky-header, .path-pending-game-requests .sticky-header, .path-packed-game-requests .sticky-header, .path-dispatched-game-requests .sticky-header, .path-delivered-game-requests .sticky-header, .path-closed-game-requests .sticky-header, .path-current-inventory-status .sticky-header {
+    top: 70px !important;
+    width: 83% !important;
+  }
+  .partner-contact-fc .field--label {
+    width: 50% !important;
+  }
+  .node-play-center-form #edit-field-partner-wrapper, .node-play-center-form #edit-field-cluster-wrapper,
+.page-node-type-play-center #edit-field-partner-wrapper, .page-node-type-play-center #edit-field-cluster-wrapper, .page-node-type-cluster #edit-field-associated-field-officer-wrapper {
+	width: 100% !important;
+}
+  .path-current-inventory-status .tbl_inventory {
+    display: block;
+    overflow: auto;
+  }
+  .node-inventory-form .field--name-field-game-name, .node-inventory-edit-form .field--name-field-game-name {
+    width: 100% !important;
+  }
+  .path-generate-request .btn-default, .full-stocks-report-inv #edit-submit {
+    margin-bottom: 10px !important;
+  }
+  .rd-requested-by span, .rd-play-center span, .rd-date-of-request span, .rd-date-of-packing span, .rd-date-of-despatch span, .rd-date-of-delivered span {
+    width: 100% !important;
+  }
+  .field--name-field-partner-code, .field--name-field-date-partner, .field--name-field-partner-type {
+    width: 100% !important;
+  }
+    .field--name-field-summary-of-location, .field--name-field-quality-source-pickup {
+        margin-bottom: 15px;
+    }
+    .page-node-type-source-pickup .source-pickup .field--label-inline {
+        width: 100%  !important;
+        display: inline-block;
+    }
+    #edit-field-date-of-pickup-sp-wrapper, #edit-field-quality-source-pickup-wrapper, #edit-field-summary-of-location-wrapper {
+        margin-left: 0px !important;
+        width: 100%  !important;
+    }
+    .has-multiple-fields-remove-button .multiple-fields-remove-button, .has-multiple-fields-remove-button .multiple-fields-remove-button:hover, .has-multiple-fields-remove-button .multiple-fields-remove-button:focus {
+        right: 0px !important;
+        top: 41% !important;
+        left: 47% !important;
+    }
+    .node-update-ideal-inventory-edit-form {
+        margin-top: 25px;
+    }
+    #edit-account .form-item-notify, .node-update-ideal-inventory-edit-form .control-label {width:70% !important;}
+    #edit-field-upload-documents-playcen-wrapper .field--name-field-upload-documents-pc, #edit-field-upload-documents-partner-wrapper .field--name-field-upload-documents-partner, #edit-field-upload-document-activity-wrapper .field--name-field-upload-documents-activity, #g-type-of-center, #g-type-of-school {
+        width: 100% !important;
+        display: inline-block !important;
+        margin-right: 0px !important;
+    }
+
+    #edit-field-upload-documents-playcen-wrapper .field--name-field-description-pc, #edit-field-upload-documents-partner-wrapper .field--name-field-description-partner, #edit-field-upload-document-activity-wrapper .field--name-field-description-activity {
+        display: block !important;
+        width: 100% !important;
+        margin-right: 0px !important;
+    }
+
+    #edit-field-upload-documents-playcen-wrapper .form-actions, #edit-field-upload-documents-partner-wrapper .form-actions, #edit-field-upload-document-activity-wrapper .form-actions {
+        margin-top: 0px !important;
+    }
+
+    #g-type-of-kids, #g-kids-background {
+        width: 100% !important;
+    }
+    #edit-field-no-of-kids-session-wrapper {
+        width: 100% !important;
+    }
+    .view-manage-users .view-content .table-responsive, .view-data-entry-listing-view .view-content .table-responsive {
+        border: none !important;
+      }
+  .region.region-header {
+    height: 45px;
+    padding: 15px 38px;
+  }
+  .partner-code-fc, .partner-type-fc, .partner-date-fc {width: 100% !important;}
+  .user-login-form .form-item-name, .user-login-form .form-type-password, .user-login-form .captcha {
+    width: 230px !important;
+    margin: 0px 0px 25px 0px;
+  }
+  .user-login-form .form-item.js-form-item.form-type-textfield.js-form-type-textfield.form-item-name.js-form-item-name.form-group {
+    width: 230px !important;
+  }
+  #block-welcomeuserblock {
+    margin-top: 15px;
+    position: fixed;
+    right: 55px;
+  }
+  .field--name-field-game-name .btn, .field--name-field-game-name .inv_issue_btn {
+    width: 100% !important;
+    margin-top: 15px;
+    display: inherit;
+}
+.path-user .btn-sign-in-google.align-center {margin-left:10px;}
+.library-followup-form .form-type-textfield, .request-sheet-report .form-type-textfield {
+    width: 100% !important;
+  }
+/*.user-login-form .form-item-name, .user-login-form .form-type-password {
+    width: 88% !important;
+  }*/
+  section#block-googlemenu {
+    width: 100%;
+  }
+/*.path-user*/ .user-login-form {
+    max-width: 1000px;
+    width: 100%;
+    padding-left: 10px;
+    padding-top: 34px;
+    padding-bottom: 90px;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-color: #b8aa88;
+}
+.path-inventory-details .table-responsive > .table > tbody > tr > td {
+    white-space: normal !important;
+}
+/*.user-logged-in .field--label {width:auto !important;}*/
+.group-boys-category, .group-girls-category {
+	width: 100% !important;
+}
+.page-node-type-record-activity .field--name-field-no-of-kids-attendents .field--label, .page-node-type-record-activity .field--name-field-other-attendents .field--label, .page-node-type-record-activity .field--name-field-play-center-record .field--label, .page-node-type-record-activity .field--name-field-reportig-fo .field--label, .page-node-type-record-activity .field--name-field-volunteer-attendents .field--label, .page-node-type-record-activity .field--name-field-date-time .field--label, .page-node-type-record-activity .field--name-field-activity .field--label, .field--name-field-associated-field-officer .field--label, .page-node-type-source-pickup .field--name-field-source .field--label, .page-node-type-source-pickup .field--name-field-date-of-pickup-sp .field--label, .page-node-type-kbi .field--label, .user-logged-in .field--label, .page-node-type-play-center .field--label {
+	width: 100%;
+}
+div#edit-field-vendor-taxo-wrapper, div#edit-field-center-code-wrapper, div#edit-field-other-vendor-wrapper {
+    width: 96%;
+}
+.navbar-btn {
+  width: 176px !important;
+  padding: 6px 10px !important;
+  text-align: center;
+  padding-left: 26px !important;
+}
+#block-bootstrap-account-menu {
+    width:100%; text-align: right;
+    margin-right: 30px;}
+#block-bootstrap-account-menu .nav > li {
+      display: inline-block;
+  }
+.node-inventory-form .field--name-field-quantity, .node-inventory-edit-form .field--name-field-quantity {
+    width: 100%;
+}
+.node-inventory-form .field--name-field-game-name, .node-inventory-edit-form .field--name-field-game-name {
+    margin-right: 0px !important;
+    width:100% !important;
+}
+/*.region.region-header {
+        height: 45px;
+        padding: 15px;
+}*/
+.page-header {
+      font-size: 18px;
+}
+    .col-sm-12 {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+    td.field-multiple-drag {
+        padding: 0px !important;
+        padding-left: 3px !important;
+    }
+  
+    .btn, .inv_issue_btn {width:96% !important; margin-top:15px;}
+    .path-user .btn, .inv_issue_btn, .path-playcenter-followup .btn, .inv_issue_btn, .path-inventory-history .btn, .inv_issue_btn, .path-playcenter-followup .btn, .inv_issue_btn {width:auto !important; margin-top:0px !important;}
+    .node-inventory-form .panel-title, .node-inventory-edit-form .panel-title  {
+        font-size: 14px;
+    }
+    /*label.control-label.js-form-required.form-required {
+        background-color: #000;
+        color: #fff;
+        padding: 5px 6px;
+        font-size: 12px;
+        margin-top: 1px;
+    }*/
+    .entity-meta {
+      display: none;
+  }
+}
+
+@media screen and (min-width: 481px) and (max-width: 767px) {
+  .group-boys-category, .group-girls-category {
+	width: 100% !important;
+}
+    .custom-feed-icon {margin-bottom: 15px;}
+  .path-inventory-listing .form-inline .select-wrapper {
+    width: 100% !important;
+  }
+  .path-pending-request-details .sticky-header, .path-packed-request-details .sticky-header, .path-dispatched-request-details .sticky-header, .path-delivered-request-details .sticky-header, .path-closed-request-details .sticky-header, .path-generate-request .sticky-header, .path-pending-game-requests .sticky-header, .path-packed-game-requests .sticky-header, .path-dispatched-game-requests .sticky-header, .path-delivered-game-requests .sticky-header, .path-closed-game-requests .sticky-header, .path-current-inventory-status .sticky-header {
+    top: 70px !important;
+    width: 83% !important;
+  }
+  .partner-contact-fc .field--label {
+    width: 50% !important;
+  }
+  .node-play-center-form #edit-field-partner-wrapper, .node-play-center-form #edit-field-cluster-wrapper,
+  .page-node-type-play-center #edit-field-partner-wrapper, .page-node-type-play-center #edit-field-cluster-wrapper, .page-node-type-cluster #edit-field-associated-field-officer-wrapper {
+    width: 100% !important;
+  }
+  .path-current-inventory-status .tbl_inventory {
+    display: block;
+    overflow: auto;
+  }
+  .node-inventory-form .field--name-field-game-name, .node-inventory-edit-form .field--name-field-game-name {
+    width: 100% !important;
+  }
+  .path-generate-request .btn-default, .full-stocks-report-inv #edit-submit {
+    margin-bottom: 10px !important;
+  }
+  .field--name-field-partner-code, .field--name-field-date-partner, .field--name-field-partner-type {
+    width: 100% !important;
+  }
+
+    .field--name-field-summary-of-location, .field--name-field-quality-source-pickup {
+        margin-bottom: 15px;
+    }
+    .page-node-type-source-pickup .source-pickup .field--label-inline, #g-type-of-center, #g-type-of-school {
+        width: 100%  !important;
+    }
+    #edit-field-date-of-pickup-sp-wrapper, #edit-field-quality-source-pickup-wrapper, #edit-field-summary-of-location-wrapper {
+        margin-left: 0px !important;
+        width: 100%  !important;
+    }
+    .has-multiple-fields-remove-button .multiple-fields-remove-button, .has-multiple-fields-remove-button .multiple-fields-remove-button:hover, .has-multiple-fields-remove-button .multiple-fields-remove-button:focus {
+        right: 0px !important;
+        top: 41% !important;
+        left: 47% !important;
+    }
+    .node-update-ideal-inventory-edit-form {
+        margin-top: 25px;
+    }
+    #edit-account .form-item-notify, .node-update-ideal-inventory-edit-form .control-label{width:70% !important;}
+    #edit-field-upload-documents-playcen-wrapper .field--name-field-upload-documents-pc, #edit-field-upload-documents-partner-wrapper .field--name-field-upload-documents-partner, #edit-field-upload-document-activity-wrapper .field--name-field-upload-documents-activity {
+        width: 100% !important;
+        display: inline-block !important;
+        margin-right: 0px !important;
+    }
+
+    #edit-field-upload-documents-playcen-wrapper .field--name-field-description-pc, #edit-field-upload-documents-partner-wrapper .field--name-field-description-partner, #edit-field-upload-document-activity-wrapper .field--name-field-description-activity {
+        display: block !important;
+        width: 100% !important;
+        margin-right: 0px !important;
+    }
+
+    #edit-field-upload-documents-playcen-wrapper .form-actions, #edit-field-upload-documents-partner-wrapper .form-actions, #edit-field-upload-document-activity-wrapper .form-actions {
+        margin-top: 0px !important;
+    }
+
+    #g-type-of-kids, #g-kids-background {
+        width: 100% !important;
+    }
+    #edit-field-no-of-kids-session-wrapper {
+        width: 100% !important;
+    }
+  .view-manage-users .view-content .table-responsive, .view-data-entry-listing-view .view-content .table-responsive {
+    border: none !important;
+  }
+  .partner-code-fc, .partner-type-fc, .partner-date-fc {width: 100% !important;}
+  .user-login-form .form-item-name, .user-login-form .form-type-password, .user-login-form .captcha {
+    width: 270px !important;
+    margin: 0px 0px 25px 0px;
+  }
+  .user-login-form .form-item.js-form-item.form-type-textfield.js-form-type-textfield.form-item-name.js-form-item-name.form-group {
+    width: 270px !important;
+  }
+  #block-welcomeuserblock {
+    margin-top: 15px;
+    position: fixed;
+    right: 80px;
+  }
+  .library-followup-form .form-type-textfield, .request-sheet-report .form-type-textfield {
+    width: 100% !important;
+  }
+
+  .path-inventory-details .table-responsive > .table > tbody > tr > td {
+    white-space: normal !important;
+}
+
+  /*.user-logged-in .field--label {width:auto !important;}*/
+  div#edit-field-vendor-taxo-wrapper, div#edit-field-center-code-wrapper, div#edit-field-other-vendor-wrapper {
+    width: 96%;
+}
+.navbar-btn {
+  width: 176px !important;
+  padding: 6px 10px !important;
+  text-align: center;
+  padding-left: 26px !important;
+}
+  #block-bootstrap-account-menu {
+    width:60%; text-align: right;
+    margin-right: 30px;}
+    #block-bootstrap-account-menu .nav > li {
+      display: inline-block;
+  }
+  .entity-meta {
+    display: none;
+}
+    /*label.control-label.js-form-required.form-required {
+        background-color: #000;
+        color: #fff;
+        padding: 5px 6px;
+        font-size: 12px;
+        margin-top: 1px;
+    } */
+    .node-inventory-form .panel-title, .node-inventory-edit-form .panel-title  {
+        font-size: 14px;
+    }
+    .region.region-header {
+        height: 45px;
+        padding: 15px 40px;
+    }
+    .page-header {
+      font-size: 18px;
+    }
+    .col-sm-12 {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+
+    td.field-multiple-drag {
+        padding: 0px !important;
+        padding-left: 3px !important;
+    }
+    .node-inventory-form .field--name-field-game-name, .node-inventory-edit-form .field--name-field-game-name {
+        margin-right: -6px !important;
+    }
+
+    .btn, .inv_issue_btn {width:96% !important; margin-top:15px;}
+
+    .path-user .btn, .inv_issue_btn, .path-playcenter-followup .btn, .inv_issue_btn, .path-inventory-history .btn, .inv_issue_btn, .path-playcenter-followup .btn, .inv_issue_btn {width:auto !important; margin-top:0px !important;}
+}
+
+/*@media only screen and (max-width: 1150px) {
+.navbar-nav > li > a { padding: 20px 4px 20px 4px !important; font-size: 11px;}
+#block-bootstrap-main-menu {width: calc(100% - 185px) !important;}
+.navbar-nav { margin-left: 3px;}
+}*/
+
+@media only screen and (max-width: 768px) {
+  #block-customlogout {display:none !important;}
+  /*.navbar-btn {padding: 5px 0px !important;}*/
+/*.user-logged-in section {margin-top: 70px;}*/
+#block-mainnavigation {display: none;}
+/*#block-bootstrap-main-menu {height: auto; width: 100%;}*/
+.navbar-nav > li > a {padding: 10px 6px !important; font-size: 12px; line-height: 10px;}
+.navbar-nav {margin: 0px;}
+.navbar-toggle { border: 0px; margin-top: 12px; }
+}
+
+@media only screen and (max-width: 768px) {
+  .path-generate-request #select_playcenter {
+    width: 100% !important;
+  }
+  .node-inventory-form .field--name-field-quantity, .node-inventory-edit-form .field--name-field-quantity,
+  .navbar-is-fixed-top .field--name-field-category {
+    display: block !important;
+    width: 90% !important;
+}
+  .path-playcenter-followup .panel-body, .path-request-sheet-report .panel-body {
+    padding: 0px;
+    overflow: auto;
+    border: none !important;
+}
+  #mark_issue_pc_audit_wrapper {
+    overflow: auto;
+  }
+  .full-stocks-report .pcenter_fullstock_rep, .full-stocks-report .form-inline, #edit-field-source-wrapper, #edit-field-date-of-pickup-sp-wrapper, #edit-field-reportig-fo-wrapper, #edit-field-play-center-record-wrapper, #edit-field-date-time-wrapper, #edit-field-activity-type-wrapper, #edit-field-no-of-kids-attendents-wrapper, /*#edit-field-other-attendants-wrapper,*/ #edit-field-volunteer-attendents-wrapper, #edit-field-other-attendants-wrapper, .js-form-item-name.form-group {
+    width: 100% !important;
+  }
+  a.mobile-logout {
+    display: block !important;
+  }
+  #edit-field-primary-check .form-item.js-form-item.form-type-checkbox {width:100% !important;}
+  .addstock-form .form-inline, .request-sheet-report .form-inline, .game_name_report, .game_name_report .control-label, .game_name_report .input-group, .full-stocks-report-inv .form-inline {
+    width: 100% !important;
+}
+.path-inventory-listing .region.region-header, .path-activity-listings .region.region-header, .page-node-type-record-activity .region.region-header, .path-source-pickup .region.region-header, .path-cluster .region.region-header, .path-kbi-category .region.region-header, .path-playcenter .region.region-header, .path-partner .region.region-header, .path-kids-background .region.region-header, .path-type-of-center .region-header, .path-type-of .region-header, .path-type-of-school .region-header, .path-type-of-activity .region-header, .path-manage-users .region-header, .path-kbi .region-header, .path-partner-type .region-header     {
+  height: 120px;
+}
+
+  #block-manageinventorymaster, #block-sourcepickupmaster, #block-clustermaster, #block-kbicategory, #block-partnertype {
+    float: left !important;
+    margin-top: 0px;
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+#block-typeofschool, #block-typeofkids, #block-kidsbackground, #block-typeofcenter, #block-allmasterlinksmenu-2, #block-kbimaster, #block-manageusermaster, #block-newactivityrecord, #block-partnermaster, #block-manageinventorymaster, #block-sourcepickupmaster, #block-clustermaster, #block-kbicategory,
+#block-newactivityrecord,  #block-sourcepickupmaster, #block-clustermaster, #block-partnermaster, #block-kidsbackground, #block-typeofcenter, #block-typeofkids, #block-typeofschool, #block-addactivitytype, #block-partnertype  {
+  float: right !important;
+  margin-top: 0px;
+  width: auto;
+  margin-bottom: 20px;
+}
+
+
+  .entity-meta {
+    display: none;
+}
+
+  /*#edit-title-wrapper,*/ .field--name-field-address-pc, .form-item-field-contact-details-0-value, .grp-no-of-kids, .form-type-vertical-tabs, .node-form .form-actions, .field--name-field-playc,.field--name-field-latitude, .field--name-field-longitude, .no-of-kids-lbl, .field--name-field-partner, .field--name-field-cluster, .field--name-field-kids-background, .field--name-field-type-of-school, .field--name-field-close-date,.field--name-field-start-date, .field--name-field-status, .field--name-field-remark, #edit-title-wrapper .field--name-field-ty,.field--name-field-type-of-center-tax,
+  .navbar-is-fixed-top .field--name-field-similar-game-family, .navbar-is-fixed-top .field--name-field-sub-catgeory, /*.navbar-is-fixed-top .field--name-field-category,*/ .navbar-is-fixed-top .field--name-field-manufacturer, .navbar-is-fixed-top .field--name-field-game-code, .node-inventory-form .field--name-field-vendor, .node-inventory-form .field--name-field-inv-entered-by, .node-inventory-form .field--name-field-donated-purchased, .node-inventory-form .field--name-field-source-pickup-title,  #edit-title-wrapper, #edit-field-playc-wrapper, .field--name-field-latitude, .field--name-field-longitude, .no-of-kids-lbl, .field--name-field-partner, .field--name-field-cluster, #edit-field-kids-background-wrapper, #edit-field-type-of-school-wrapper, 
+  #edit-field-first-name-wrapper, #edit-field-l-wrapper, .form-type-email, /*.form-item-name,*/ .form-item-pass-pass1, .form-item-pass-pass2, 
+  .field--name-field-kbi-category, .field--name-field-kbi-category-other, .field--widget-language-select,
+  .field--name-field-partner-code, #edit-title-wrapper, .form-item-roles, #edit-status--wrapper, .js-form-item-name.form-group {
+      width:96% !important;
+      vertical-align: top;
+      /* margin-left: 1%; */
+      margin-right: 1%;}
+  }
+
+  @media screen and (max-width: 992px) {
+    .request-details-left-side, .rd-play-center, .rd-date-of-request, .rd-requested-by, .rd-date-of-packing, .rd-date-of-despatch, .request-details-right-side {
+      width: 100% !important;
+     }
+    /* .library-followup-form .form-type-textfield, .request-sheet-report .form-type-textfield {
+      width: 80% !important;
+    }*/
+    .field--name-field-game-name .panel-body {
+      width: 72%;
+    }
+    .btn, .inv_issue_btn {font-size: 13px !important;}
+      .navbar-nav {
+        margin-left: 3px;
+    }
+      
+      .navbar .logo img {
+        width: 90%;
+    }
+    #block-bootstrap-main-menu {
+      width: calc(100% - 0px);
+    }
+      .navbar-nav > li > a {padding: 10px 12px !important; font-size: 11px; line-height: 10px;}
+      .user-logged-in .field--name-field-last-name, .user-logged-in .field--name-field-first-name, .user-logged-in .field--name-field-l, .user-logged-in #edit-field-l-wrapper, .user-logged-in #edit-field-first-name-wrapper, .page-node-type-record-activity .field--name-field-no-of-kids-attendents, .page-node-type-record-activity .field--name-field-other-attendents, .page-node-type-record-activity .field--name-field-play-center-record, .page-node-type-record-activity .field--name-field-reportig-fo, .page-node-type-record-activity .field--name-field-volunteer-attendents, .page-node-type-record-activity .field--name-field-activity, .page-node-type-record-activity .field--name-field-date-time, .field--name-field-associated-field-officer, .page-node-type-source-pickup .field--name-field-source, .page-node-type-source-pickup .field--name-field-date-of-pickup-sp, .page-node-type-partner .field--label-inline, .page-node-type-kbi .field--label-inline, .user-logged-in .field--label-inline, .page-node-type-play-center .field--label-inline, /*.navbar-is-fixed-top .field--name-field-similar-game-family,*/ /*.navbar-is-fixed-top .field--name-field-sub-catgeory,*/ /*.navbar-is-fixed-top .field--name-field-category,*/ /*.navbar-is-fixed-top .field--name-field-manufacturer,*/ /*.navbar-is-fixed-top .field--name-field-game-code,*/ .node-inventory-form .field--name-field-vendor, .node-inventory-form .field--name-field-inv-entered-by, .node-inventory-form .field--name-field-donated-purchased, .node-inventory-form .field--name-field-source-pickup-title,  /*#edit-title-wrapper,*/ #edit-field-playc-wrapper, .field--name-field-latitude, .field--name-field-longitude, .no-of-kids-lbl, .field--name-field-partner, .field--name-field-cluster, #edit-field-kids-background-wrapper, #edit-field-type-of-school-wrapper, 
+    #edit-field-first-name-wrapper, #edit-field-l-wrapper, .form-type-email, /*.form-item-name,*/ .form-item-pass-pass1, .form-item-pass-pass2, 
+    .field--name-field-kbi-category, .field--name-field-kbi-category-other, .field--widget-language-select,
+    .field--name-field-partner-code, /*#edit-title-wrapper,*/ .form-item-roles, #edit-status--wrapper, .js-form-item-name.form-group, .node-play-center-form .field--name-title, #edit-title-wrapper {
+        width: 96%;}
+      }
+
+      @media screen and (min-width: 768px) and (max-width: 992px) {
+        .path-generate-request #select_playcenter {
+          width: 65% !important;
+        }
+        #block-bootstrap-main-menu {
+          width: calc(80% - 125px);
+        }
+        .full-stocks-report-inv .form-inline, .full-stocks-report-inv .game_invn_fullstock {
+          width: 43% !important;
+      }
+      .game_name_report {
+        width: 40% !important;
+    }
+
+    .game_name_report .control-label {
+      width: 17% !important;
+    }
+      .navbar-btn {text-align: center !important; padding:12px 0px !important; width:130px;}
+    }
+
+@media screen and (min-width: 993px) and (max-width: 1030px) {
+  .path-generate-request #select_playcenter {
+    width: 50% !important;
+  }
+  .full-stocks-report-inv .form-inline, .full-stocks-report-inv .game_invn_fullstock {
+    width: 43% !important;
+}
+.game_name_report {
+  width: 40% !important;
+}
+
+.game_name_report .control-label {
+width: 17% !important;
+}
+
+    #block-bootstrap-main-menu {width: calc(93% - 211px) !important;}
+    .navbar-nav > li > a { padding: 5px !important; font-size: 10px;}
+    .navbar-nav { margin-left: 3px;}
+    .navbar-btn {padding:12px 0px !important; text-align: center !important; width:130px;}
+    .navbar .logo img {
+      width: 90%;
+  }
+    }
+  
+    @media screen and (min-width: 1116px) and (max-width: 1250px) {
+      .navbar-nav > li > a {
+        padding: 20px 8px 20px 8px !important;
+        font-size: 10px;
+      }
+    }
+
+    @media screen and (min-width: 1031px) and (max-width: 1115px) {
+      .navbar-nav > li > a { padding: 5px 8px 5px 8px !important; font-size: 10px;}
+    }
+
+  @media screen and (min-width: 1031px) and (max-width: 1250px) {
+    .path-generate-request #select_playcenter {
+      width: 50% !important;
+    }
+    .full-stocks-report-inv .form-inline, .full-stocks-report-inv .game_invn_fullstock {
+      width: 30% !important;
+  }
+   /* .node-inventory-form .field--name-field-quantity, .node-inventory-edit-form .field--name-field-quantity {
+      width: 31%;
+  }*/
+
+    #block-bootstrap-main-menu {width: calc(93% - 235px) !important;}
+    .navbar-nav { margin-left: 3px;}
+    .navbar-btn {padding: 5px 0px !important;}
+    .navbar-btn img {width:90% !important;}
+    .navbar-btn {text-align: center !important;}
+    .navbar .logo img {
+      width: 90%;
+  }
+  }
+  
+  @media screen and (min-width: 1251px) and (max-width: 1400px) {
+    .navbar-nav > li > a { padding: 20px 10px 20px 10px !important; font-size: 11px;}
+    #block-bootstrap-main-menu {width: calc(94% - 235px) !important;}
+    .navbar-nav { margin-left: 3px;}
+    .navbar-btn {padding: 5px 0px !important;}
+    .navbar-btn img {width:90% !important;}
+    .navbar-btn {text-align: center !important;}
+    .navbar .logo img {
+      width: 90%;
+  }
+  }
+  
+div#grid2_wrapper {
+ padding-top: 25px;
+}
+#block-customlogout {
+	display: inline-block;
+	width: auto;
+  margin-left: 15px;
+  margin-right: 10px;
+}
+.help-block, .control-group .help-inline {
+	color: #333 !important;
+}
+.path-user .alert.alert-danger.alert-dismissible {
+	max-width: 1000px;
+	margin: 0 auto;
+	margin-bottom: 20px;
+}
+#edit-status--wrapper legend, #edit-field-ty--wrapper legend, #edit-field-kids-background--wrapper legend, #edit-field-primary-check--wrapper legend, #edit-field-quality-source-pickup--wrapper legend, #edit-field-sub-catgeory--wrapper legend {
+	border: none !important;
+	margin-bottom: 0px;
+}
+#no-of-kids-lbl, #edit-field-cluster-wrapper {
+	margin-left: 0px !important;
+}
+
+#g-type-of-center, #g-type-of-school {
+	width: 30%;
+	margin-bottom: 12px;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 20px;
+}
+
+.field--name-field-partner-code, .field--name-field-date-partner, .field--name-field-partner-type {
+	width: 30%;
+	margin-bottom: 12px;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 20px;
+}
+
+.field--widget-language-select {
+	display: inline-block;
+}
+
+#g-type-of-kids, #g-kids-background {
+	width: 22%;
+	margin-bottom: 12px;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 20px;
+}
+#edit-field-upload-documents-playcen-wrapper .field--name-field-upload-documents-pc, #edit-field-upload-documents-partner-wrapper .field--name-field-upload-documents-partner, #edit-field-upload-document-activity-wrapper .field--name-field-upload-documents-activity {
+	width: 45%;
+	display: inline-block;
+	margin-right: 25px;
+}
+#edit-field-upload-documents-playcen-wrapper .field--name-field-description-pc, #edit-field-upload-documents-partner-wrapper .field--name-field-description-partner, #edit-field-upload-document-activity-wrapper .field--name-field-description-activity {
+	display: inline-block;
+	width: 30%;
+	vertical-align: top;
+	margin-right: 15px;
+}
+#edit-field-upload-documents-playcen-wrapper .form-actions, #edit-field-upload-documents-partner-wrapper .form-actions, #edit-field-upload-document-activity-wrapper .form-actions {
+	width: 15%;
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 50px;
+}
+#edit-field-upload-documents-playcen-wrapper textarea, #edit-field-upload-documents-partner-wrapper textarea, #edit-field-upload-documents-partner-wrapper textarea {
+  height:80px;
+}
+.no-of-kids-lbl h3 {
+  margin-top:0px;
+}
+/*.node-kbi-edit-form .form-control {
+	padding-left: 0px;
+}*/
+.node-update-ideal-inventory-edit-form .control-label {
+	width: 12%;
+}
+.node-update-ideal-inventory-edit-form #edit-title-wrapper label {
+	width: 40%;
+}
+.node-update-ideal-inventory-edit-form input {
+	width: 40%;
+}
+.play-center .field.field--name-field-primary-check.field--type-list-string.field--label-inline {
+	width: 100%;
+}
+.group-boys-category, .group-girls-category {
+	width: 47%;
+	display: inline-block;
+	margin-bottom: 15px;
+margin-top: -8px;
+}
+.group-boys-category .field--label-inline, .group-girls-category .field--label-inline {
+	width: 100% !important;
+}
+.field.field--name-field-remark.field--type-string.field--label-inline {
+	margin-top: 15px;
+}
+.group-boys-category h3, .group-girls-category h3 {
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+.page-node-type-partner .partner, .page-node-type-source-pickup .source-pickup  {
+	width: 100%;
+	min-height: 250px;
+}
+.page-node-type-source-pickup .source-pickup .field--label-inline {
+	width: 25%;
+	display: inline-block;
+}
+
+/*.page-node-type-partner .partner .field--label-inline {
+	width: 46%;
+	display: inline-block;
+	margin-right: 25px;
+}*/
+
+.node-partner-form .field--name-title, .node-partner-edit-form .field--name-title {
+	width: 100%;
+}
+#edit-field-date-of-pickup-sp-wrapper, #edit-field-quality-source-pickup-wrapper {
+	margin-left: 3%;
+	width: 22%;
+}
+.page-node-type-cluster .field--label {
+	width: 32% !important;
+}
+/*.taxonomy-term-kbi-category-form input, .taxonomy-term-kids-background-form input, .taxonomy-term-type-of-center-form input, .taxonomy-term-type-of-form input, .taxonomy-term-type-of-school-form input, .taxonomy-term-partner-type-form  input, .taxonomy-term-type-of-activity-form input, .node-game-edit-form input, .page-node-type-inventory input, .page-node-type-inventory input, .node-partner-edit-form input, .node-partner-edit-form textarea, /*.path-user input, .page-node-type-play-center input, .page-node-type-play-center textarea, .user-form input, .node-cluster-edit-form input {
+	padding-left: 0px;
+}*/
+
+.partner-code-fc .field--label, .partner-type-fc .field--label, .partner-date-fc .field--label {
+	width: 49%;
+}
+.partner-code-fc, .partner-type-fc, .partner-date-fc {
+	width: 25%;
+	display: inline-block !important;
+	padding-bottom: 30px;
+	margin-right: 30px !important;
+}
+.partner-contact-fc {
+	width: 100% !important;
+}
+.partner-contact-fc .field--label {
+	width: 15%;
+}
+.upload-doc-fc {
+	width: 100%;
+	display: inline-block !important;
+	margin-top: 15px;
+}
+
+.upload-doc-fc .field--label {
+	width: 100%;
+	display: block !important;
+}
+
+.upload-doc-fc .field--items {
+	/* display: inline-block; */
+	margin-left: 0px;
+	padding: 0px;
+}
+
+.upload-doc-fc .field--name-field-upload-documents-partner {
+	display: inline-block;
+	width: 57%; 
+	margin-right: 26px !important;
+	/* margin-left: 40px !important; */
+	margin-top: 5px;
+}
+
+/*.upload-doc-fc .field--name-field-upload-documents-partner {
+	display: inline-block;
+	width: 40%;
+	margin-right: 26px !important;
+	margin-left: 40px !important;
+}*/
+
+.upload-doc-fc .field--name-field-description-partner {
+	display: inline-block;
+	width: 25% !important;
+	vertical-align: top;
+	/* margin-top: 25px; */
+	margin-top: 7px;
+	/* margin-left: 40px; */
+}
+
+/*.upload-doc-fc .field--name-field-description-partner {
+	display: block;
+	width: 95% !important;
+	vertical-align: top;
+	/* margin-top: 25px; 
+	margin-bottom: 25px;
+	margin-left: 40px;
+}*/
+.main-container .row {
+	margin-right: 0px !important;
+	margin-left: 0px !important;
+}
+
+.path-generate-request .select_playcenter .form-item .control-label {
+	display: inline-block;
+	width: 21%;
+	vertical-align: top;
+	padding-top: 8px;
+}
+
+.path-generate-request .select_playcenter .form-item .control-label {
+	display: inline-block;
+	width: 21%;
+	vertical-align: top;
+	padding-top: 8px;
+}
+
+.path-generate-request .select_playcenter .form-item .input-group {
+	width: 75%;
+	display: inline-table;
+}
+.path-generate-request .table-responsive, .path-dashboard .table-responsive, .node-inventory-form .table-responsive {
+	border: none !important;
+}
+.play-center .field--name-field-status {
+	margin-right: 0px;
+}
+
+.node-play-center-form #edit-field-partner-wrapper, .node-play-center-form #edit-field-cluster-wrapper,
+.page-node-type-play-center #edit-field-partner-wrapper, .page-node-type-play-center #edit-field-cluster-wrapper, .node-game-form #edit-field-similar-game-family-wrapper {
+	width: 45%;
+	display: inline-block;
+  margin-right: 25px;
+  vertical-align: top;
+}
+
+.page-node-type-cluster #edit-field-associated-field-officer-wrapper {
+	width: 55%;
+	display: inline-block;
+  vertical-align: top;
+}
+#group-no-of-kids h2 {
+	border-bottom: 1px solid #ccc;
+}
+.field--name-field-description-activity .field--label,
+.field--name-field-upload-documents-activity .field--label {
+  margin-bottom: 0px !important;
+  margin-top: 10px !important;
+}
+
+.feed-icons {
+	float: right;
+  margin-right: 16px;
+  margin-top: -27px;
+}
+/*.field--name-field-other-attendees .field--label {
+	float: left;
+	width: 25%;
+}*/
+
+.container-fluid {
+	padding-right: 0px !important;
+	padding-left: 0px !important;
+}
+
+/* .path-pending-request-details .sticky-header, .path-packed-request-details .sticky-header, .path-dispatched-request-details .sticky-header, .path-delivered-request-details .sticky-header, .path-closed-request-details .sticky-header, .path-generate-request .sticky-header, */
+ .path-pending-game-requests .sticky-header, .path-packed-game-requests .sticky-header, .path-dispatched-game-requests .sticky-header, .path-delivered-game-requests .sticky-header, .path-closed-game-requests .sticky-header, .path-current-inventory-status .sticky-header {
+	top: 60px !important;
+}
+
+.path-generate-request #select_playcenter {
+	width: 40%;
+}
+.tqty-pen-detail span, .tqty-rem-detail span {
+	font-weight: bold;
+	margin-bottom: 10px;
+	display: inline-block;
+}
+
+/*top csv*/
+.custom-feed-icon {
+	background-color: #fcc900;
+	padding: 7px 14px;
+	border: 1px solid #daaf06;
+	height: 34px;
+	font-weight: 700;
+	font-family: inherit;
+	font-size: 14px;
+}
+
+.custom-feed-icon ,.feed-icon::before {
+	content: 'CSV';
+	color: #000;
+}
+
+.custom-feed-icon .feed-icon {
+	background: no-repeat;
+	overflow: hidden;
+	/* text-indent: -999px !important; */
+	width: 34px;
+	color: #000 !important;
+	font-weight: 700;
+	text-align: center;
+	text-decoration: none !important;
+	font-size: 14px;
+	/* content: "CSV"; */
+	height: 22px;
+	font-family: inherit;
+	display: block;
+}
+
+/*.custom-feed-icon a.feed-icon {
+  display: block;
+  width: 25px;
+  font-size: 0px !important;
+}*/
+
+/*bottom csv*/
+.csv-feed.views-data-export-feed.form-group {
+	background-color: #fcc900;
+	padding: 5px 14px;
+	border: 1px solid #daaf06;
+	/* vertical-align: middle; */
+	/* background-image: url(https://toybank.wastaging.com/modules/views_data_export/images/csv.png); */
+	/* background-position: center; */
+	/* background-repeat: no-repeat; */
+}
+.csv-feed .feed-icon {
+	background-image: none !important;
+}
+
+.views-data-export-feed .feed-icon {
+	background: no-repeat;
+	/* overflow: unset; */
+	text-indent: 0px !important;
+	width: 34px;
+	color: #000 !important;
+	font-weight: 700;
+	text-align: center;
+	text-decoration: none !important;
+	font-size: 14px;
+	/* content: "CSV"; */
+	height: 22px;
+	font-family: inherit;
+}
+
+/*a.feed-icon {
+	font-weight: 700 !important;
+	font-size: 14px !important;
+	font-family: inherit !important;
+	padding-top: 2px;
+}*/
+
+.views-data-export-feed .feed-icon::before {
+	content: "CSV";
+	color: #000;
+}
+.csv-feed.views-data-export-feed.form-group a:hover {
+	color: #fff !important;
+}
+
+/*.csv-feed.views-data-export-feed.form-group:hover {
+	background-color: #000;
+	/* color: #fff; 
+	border: none !important;
+	/* padding: 5px 10px;
+}*/
+
+.views-data-export-feed {
+	display: inline-block !important;
+}
+
+.report-print-wrapper button:hover {
+	color: #fff !important;
+	background-color: #000 !important;
+	border: 1px solid #000 !important;
+}
+
+.im_u .messages__wrapper {
+	width: 96%;
+}
+
+.page-header em {
+	font-style: normal;
+}
+
+/*start of all right align text*/
+
+.block-pending-request-custom-block .table-responsive table > thead > tr > th:nth-child(5), .block-dispatched-request-custom-block .table-responsive table > thead > tr > th:nth-child(5) {
+	text-align: right !important;
+	width: 12%;
+}
+
+.block-pending-request-custom-block .table-responsive table > thead > tr > th:nth-child(6), .block-dispatched-request-custom-block .table-responsive table > thead > tr > th:nth-child(6) {
+	text-align: right !important;
+	width: 10%;
+}
+
+.block-pending-request-custom-block .table-responsive table > thead > tr > th:nth-child(7), .block-dispatched-request-custom-block .table-responsive table > thead > tr > th:nth-child(7), .block-pending-request-custom-block .table-responsive table > tbody > tr > td:nth-child(7), .block-dispatched-request-custom-block .table-responsive table > tbody > tr > td:nth-child(7) {
+	width: 12%;
+	text-align: center;
+	margin-left: 15px;
+}
+.view-inventory-listing .table-responsive thead > tr > th:nth-child(5), .view-inventory-listing .table-responsive tbody > tr > td:nth-child(5) {
+	width: 12%;
+  /* padding-right: 50px; */
+  text-align: right;
+}
+#pc_pending_game_requests_table th:nth-child(4), #pc_pending_game_requests_table td:nth-child(4) {
+	text-align: right;
+	width: 18%;
+	/* padding-right: 50px; */
+}
+
+.path-playcenter .views-field-nothing-2 {
+	text-align: right;
+	width: 10%;
+	padding-right: 25px !important;
+}
+
+.path-playcenter .views-field-nothing {
+	width: 18%;
+}
+.path-playcenter #view-field-type-of-center-tax-table-column {
+	width: 12%;
+}
+
+.path-dashboard .view-game-requests .views-field-field-req-game-quantity {
+	width: 17%;
+	padding-right: 30px;
+}
+
+.path-partner .view-data-entry-listing-view table > thead > tr > th:nth-child(4), .path-partner .view-data-entry-listing-view table > tbody > tr > td:nth-child(4), .path-partner .view-data-entry-listing-view table > thead > tr > th:nth-child(5), .path-partner .view-data-entry-listing-view table > tbody > tr > td:nth-child(5) {
+	width: 13%;
+	text-align: right;
+	padding-right: 50px;
+}
+
+.grid3_wrapper_table table > thead > tr > th:nth-child(2), .grid3_wrapper_table table > thead > tr > th:nth-child(3), .grid3_wrapper_table table > thead > tr > th:nth-child(4), .grid3_wrapper_table table > thead > tr > th:nth-child(5),
+.grid3_wrapper_table table > tbody > tr > td:nth-child(2), .grid3_wrapper_table table > tbody > tr > td:nth-child(3), .grid3_wrapper_table table > tbody > tr > td:nth-child(4), .grid3_wrapper_table table > tbody > tr > td:nth-child(5) input, .views-field-field-pc-reported-quantity, .path-playcenter-followup .library-followup-form table.tbl_inventory > tbody > tr > td, .pc_audit, .views-field-field-reported-quantity, .view-req-qty, .view-req-qty, #tbl_generate_request td, #tbl_generate_request th, .system-qty, .report-qty input, .views-field-form-field-field-packed-quantity input, .views-field.views-field-field-quantity, .views-field-field-total-inventory-revision-id, .path-current-inventory-status .inventory_adut, .path-current-inventory-status .tbl_inventory > tbody > tr > td, .path-current-inventory-status #curr-inv-status table > tbody > tr > td:nth-child(5), .path-current-inventory-status #curr-inv-status table > tbody > tr > td:nth-child(6), .path-current-inventory-status #curr-inv-status table > tbody > tr > td:nth-child(7), .path-current-inventory-status #curr-inv-status table > tbody > tr > td:nth-child(8), .path-dispatch-sheet-report #dispatch-report-table tbody > tr > td:nth-child(3), .path-pending-request-details .views-field-form-field-field-req-game-quantity input, #update-ideal-cat .form-group input, td.report-qty, .path-dashboard .block-packed-request-custom-block .table-responsive table > thead > tr > th:nth-child(5) {
+	text-align: right;
+}
+
+.path-current-inventory-status .tbl_inventory > tbody > tr > td:nth-child(1), .remark-denied, #tbl_generate_request td:nth-child(1) {
+	text-align: left;
+}
+
+.game-age {
+  text-align: left !important;
+}
+/*end of all right align text*/
+
+.view-game-request-details #edit-actions, .view-game-request-details .view-footer, .path-pending-request-details #edit-actions, .path-current-inventory-status .tbl_inventory > thead > tr > th, .path-playcenter-followup .tbl_inventory > thead > tr > th, #pc_pending_game_requests_table th:nth-child(6), #pc_pending_game_requests_table td:nth-child(6)  {
+	text-align: center;
+}
+
+.view-game-request-details .js-form-item-close-game-request-description, .view-game-request-details .upload-docs {
+	width: 45%;
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 25px;
+}
+
+.node-record-activity-form #edit-field-play-center-record-wrapper, .page-node-type-record-activity #edit-field-play-center-record-wrapper, .node-record-activity-form #edit-field-activity-type-wrapper, .page-node-type-record-activity #edit-field-activity-type-wrapper, .node-record-activity-form #edit-field-activity-type-wrapper,.page-node-type-record-activity #edit-field-other-attendants-wrapper, .page-node-type-inventory #edit-field-donated-purchased-wrapper {
+	margin-left: 1%;
+}
+
+.page-node-type-record-activity .js-form-item.form-type-managed-file .btn-danger {
+	display: none;
+}
+
+.path-user-manual .dropdown-toggle .caret {
+	margin-top: 9px;
+	margin-left: 6px;
+}
+.page-node-type-game #edit-field-similar-game-family-wrapper {
+	width: 47%;
+}
+
+/*.tabledrag-handle*/ .field-multiple-drag {
+	display: none;
+}
+
+.game-req-doc-closed {
+	text-align: left;
+}
+
+.desc-close-label {
+	font-weight: bold;
+	font-size: 13px;
+	line-height: 25px;
+	/* padding-right: 10px; */
+	width: 100px;
+	display: inline-block;
+	font-family: 'Raleway', sans-serif;
+}
+.path-delivered-game-requests .view-footer {
+	margin-top: 15px;
+}
+
+.path-delivered-game-requests .view-game-requests table > thead > tr > th, .path-delivered-game-requests .view-game-requests table > tbody > tr > td {
+  padding: 7px !important;
+}
+
+.table.table-hover.table-striped.kids-count {
+	margin-bottom: 0px;
+}
+
+/*.view-footer {
+	display: inline-block;
+	width: 50%;
+	margin-top: 9px;
+}*/
+
+.req-detail .req-cat-detail-inner { /* , .req-detail .view-content thead */
+  width: auto;
+}
+.req-detail .req-cat-detail-inner.stick1 #req-details-top {
+  background-color: #fcc900;
+}
+.req-detail .req-cat-detail-inner.stick1 {
+  position: fixed;
+  /*top: 60px;*/
+  z-index: 10000;
+  border-radius: 0 0 0.5em 0.5em;
+}
+/*
+.req-detail .view-content thead.stick2 {
+  position: fixed;
+  top: 300px;
+  z-index: 10000;
+  border-radius: 0 0 0.5em 0.5em;
+} */
+
+#edit-status label {
+	font-size: 13px !important;
+}
+#g-type-of-kids label, #g-kids-background label {
+	font-size: 13px;
+}
+
+
+#user-member-account .fname, #user-member-account .lname { 
+	display: block;
+	margin-bottom: 5px;
+}
+
+#user-member-account .fname .field--label, #user-member-account .lname .field--label {
+	width: 115px;
+}
+
+#user-member-account h4 {
+	color: #333;
+	font-size: 13px;
+	padding-left: 0px;
+	width: 115px;
+	display: inline-block;
+	text-align: left;
+	margin-bottom: 5px !important;
+}
+#user-member-account .form-item {
+	margin-bottom: 6px;
+}
+
+.js-form-item-captcha-response {
+	font-size: 16px;
+}
+
+#selected_games_stats_wrapper.sticky {
+  position: fixed;
+  z-index: 999;
+}
+.path-dispatch-sheet-report .request-id-dispatch {
+	padding-right: 15%;
+}

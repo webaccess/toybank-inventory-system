@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Menu Per Role module.
+ */
+
+/**
+ * Adds permission to bypass menu_per_role access to roles having old permission.
+ */
+function menu_per_role_update_8101() {
+  $config = \Drupal::config('menu_per_role.settings');
+  $admin_see_all = !is_null($config->get('admin_see_all')) ? $config->get('admin_see_all') : FALSE;
+
+  if ($admin_see_all) {
+    /** @var \Drupal\user\Entity\Role[] $roles */
+    $roles = \Drupal\user\Entity\Role::loadMultiple();
+    foreach ($roles as $role) {
+      if ($role->hasPermission('administer menu_per_role')) {
+        $role->grantPermission('bypass menu_per_role access');
+        $role->save();
+      }
+    }
+  }
+}
+
+/**
+ * Removes old config since it is replaced by permission.
+ */
+function menu_per_role_update_8102() {
+  \Drupal::configFactory()->getEditable('menu_per_role.settings')
+    ->clear('uid1_see_all')
+    ->clear('admin_see_all')
+    ->save();
+}

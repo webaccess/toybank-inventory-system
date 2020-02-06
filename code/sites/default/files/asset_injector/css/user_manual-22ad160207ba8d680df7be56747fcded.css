@@ -1,0 +1,170 @@
+.path-user-manual .help-section .righ-help-content h3 {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+.manual-sub-header {
+	margin-top: 25px;
+	margin-bottom: 10px;
+	border-top: 1px solid #ccc;
+	padding-top: 20px;
+	font-size: 18px;
+}
+.image-popup {
+  display: none;
+}
+.help-section .left-help-menu {
+	min-width: 300px;
+	background-color: #333;
+	z-index: 1;
+	display: inline-block;
+	border: 1px solid #333;
+	vertical-align: top;
+	padding-top: 25px;
+  height: calc(100vh - 270px);
+  overflow: auto;
+  min-height: 380px;
+}
+.help-section .righ-help-content {
+	display: inline-block;
+	padding: 25px;
+	width: 94%;
+	max-width: calc(100% - 300px);
+	border: 1px solid #ccc;
+	border-left: 0px;
+	height: calc(100vh - 270px);
+  overflow: auto;
+  min-height: 380px;
+}
+.help-section .nav-tabs>li {
+  float: none;
+  margin-bottom: -1px;
+}
+.help-section .nav .open>a, .help-section .nav .open>a:focus, .help-section .nav .open>a:hover {
+  background-color: transparent;
+  border: 0px;
+}
+.help-section .dropdown-menu {
+  position: relative;
+  padding: 0px;
+  border: 0px;
+  box-shadow: unset;
+  float: none;
+}
+.help-section .nav-tabs>li>a:hover {
+  background: transparent;
+  border-color: transparent;
+}
+.help-section .divider {
+	height: 1px;
+	overflow: hidden;
+	background-color: #555;
+}
+.help-section .dropdown-menu>li>a:focus, .help-section .dropdown-menu>li>a:hover {
+  background-color: transparent;
+}
+.caret {
+  float: right;
+}
+.help-section .vertical-tab {
+  display: table;
+  width: 100%;
+}
+.sidebar-header h3 {
+  margin-top: 0px;
+}
+.pii-help-submenu {
+  padding-left: 28px;
+  background-image: url('/sites/default/files/icons/help-bullet.png');
+  background-repeat: no-repeat;
+  padding-bottom: 0px;
+  padding-top: 6px;
+  margin-top: 11px;
+  font-size: 13px;
+  font-weight: normal;
+  border-top: dotted 1px #ccc;
+  background-position: 1px 7px;
+  cursor: pointer !important;
+}
+.dropdown-toggle {
+  color: #fff !important;
+}
+.help-section .righ-help-content h2 {
+  color: #ec5426 !important;
+}
+.help-section .righ-help-content h3 {
+  font-weight: 600;
+}
+.help-section .righ-help-content a {
+  color: #333 !important;
+  text-decoration: underline;
+}
+.dropdown-toggle.help-toggle-active, .pii-help-submenu.help-toggle-active {
+  color: #05beff !important;
+}
+.help-section .sidebar-header h3 {
+  margin-bottom: 25px;
+}
+.help-section .vertical-tab span a {
+	font-size: 14px;
+	font-weight: 700;
+	padding: 10px 25px;
+  display: block;
+  text-decoration: none;
+}
+.help-section .vertical-tab span a.help-toggle-active {
+  background-color: #fcc900;
+  color: #333 !important;
+}
+.path-user-manual .help-section .tab-pane {
+  height: auto !important;
+}
+.sidebar-header {
+  padding: 0px 25px;
+  display: block;
+  border-bottom: 1px solid #555;
+}
+.sidebar-header a, .sidebar-header a:hover, .sidebar-header a:focus, .sidebar-header a:active {
+  color: #fcc900;    
+  text-decoration: none;
+}
+.manual-content img {
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width:768px){
+  .left-help-menu span, .left-help-menu span a, .left-help-menu .divider {
+    display: none !important;
+  }
+  .help-section .left-help-menu {
+    width: 100%;
+    height: auto;
+    min-height: unset;
+  }
+  .help-section .righ-help-content {
+    border-left: 1px solid 
+    #ccc;
+    width: 100%;
+    max-width: 100%;
+  }
+  .path-user-manual .help-section .tab-pane {
+    height: auto !important;
+  }
+  .tab-content > .tab-pane {
+    display: block;
+    opacity: 1;
+  }
+  .manual-header {
+    margin-top: 25px;
+    border-top: 1px solid #ccc;
+    padding-top: 25px;
+  }
+  .help-section .righ-help-content .tab-pane:first-child .manual-header {
+    margin-top: 0px;
+    padding-top: 0px;
+    border-top: 0px;
+  }
+}
+a.cboxElement {
+  cursor: zoom-in;
+}

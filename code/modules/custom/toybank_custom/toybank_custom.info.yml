@@ -1,0 +1,6 @@
+name: Toybank custom module
+type: module
+description: 'Toybank custom module.'
+package: Custom
+version: 8.x
+core: 8.x

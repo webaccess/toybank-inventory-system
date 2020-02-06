@@ -1,0 +1,633 @@
+<?php
+
+/**
+ * @file
+ * Toybank customizations.
+ */
+
+use Drupal\views\ViewExecutable;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\user\Entity\User;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function toybank_custom_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'toybank_custom/toybank_customJS';
+  $current_path = \Drupal::service('path.current')->getPath();
+  if ((strpos($current_path, 'pending-request-details/') !== false) || (strpos($current_path, 'packed-request-details/') !== false) || (strpos($current_path, 'dispatched-request-details/') !== false) || (strpos($current_path, 'delivered-request-details/') !== false)) {
+    $nid            = explode('details/', $current_path);
+    $game_nid       = $nid[1];
+    if ($game_nid) {
+      $sql = db_query("SELECT field_game_request_status_value AS status  FROM tban_node__field_game_request_status WHERE entity_id = $game_nid")->fetchAll();
+      $status = $sql[0]->status;
+      if($status =='partially_delivered') {
+        $status = 'delivered';
+      }
+      $status_url = "/".$status."-request-details/".$game_nid;
+      if ($status_url != $current_path) {
+        $response = new RedirectResponse($status_url);
+        $response->send();
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function toybank_custom_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if ($entity_form['#entity_type'] == "node") {
+    $entity_form['field_game_code']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function toybank_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#attached']['library'][] = 'toybank_custom/toybank_customJS';
+
+  // Kbi-Other text field null in edit mode.
+  if ($form_id == 'node_kbi_edit_form') {
+    $form['field_kbi_category_other']['widget'][0]['value']['#default_value'] = "";
+  }
+
+  if ($form_id == 'node_play_center_form') {
+    $form['field_node_id_update_ideal_inv']['#access'] = FALSE;
+    $form['actions']['submit']['#submit'][]            = 'update_ideal_redirect';
+  }
+
+  // PC-Other text field null in edit mode.
+  if ($form_id == 'node_play_center_edit_form') {
+    $form['field_type_of_kids_other']['widget'][0]['value']['#default_value']   = "";
+    $form['field_type_of_center_other']['widget'][0]['value']['#default_value'] = "";
+    $form['field_type_of_school_other']['widget'][0]['value']['#default_value'] = "";
+    $form['field_kids']['widget'][0]['value']['#default_value']                 = "";
+    $form['field_node_id_update_ideal_inv']['#access']                          = FALSE;
+  }
+
+  // Update Inventory - Readonly field, PC name and PC code.
+  if ($form_id == 'node_update_ideal_inventory_edit_form') {
+    $form['title']['widget'][0]['value']['#attributes']['readonly']                      = TRUE;
+    $form['field_pc_name_update_ideal']['widget'][0]['value']['#attributes']['readonly'] = TRUE;
+  }
+
+  if ($form_id == 'node_game_request_form') {
+    $form['title']['widget'][0]['value']['#default_value'] = "Game Request";
+    $form['title']['#access']                              = FALSE;
+  }
+
+  if ($form_id == 'node_inventory_form') {
+    // Entered By field.
+    $user                                                               = User::load(\Drupal::currentUser()->id());
+    $username                                                           = $user->get('name')->value;
+    $form['title']['widget'][0]['value']['#default_value']              = $username . " - Inventory";
+    $form['title']['#access']                                           = FALSE;
+    $form['field_entered_by']['widget'][0]['value']['#default_value']   = $username;
+    $form['field_entered_by']['#disabled']                              = TRUE;
+    $form['actions']['submit']['#submit'][]                             = 'inventory_update';
+    $form['field_other_vendor']['widget'][0]['value']['#default_value'] = "";
+  }
+
+  // Edit Inventory form.
+  if ($form_id == 'node_inventory_edit_form') {
+    $form['field_other_vendor']['widget'][0]['value']['#default_value'] = "";
+    $form['actions']['submit']['#submit'][]                             = 'inventory_edit_update';
+  }
+
+  if ($form_id == "node_game_form") {
+    $form['field_game_code']['#disabled'] = TRUE;
+    $sql                                  = db_query("SELECT MAX(field_game_code_value) as field_game_code_value FROM tban_node__field_game_code")->fetchAll();
+
+    if (empty($sql[0]->field_game_code_value)) {
+      $new_code = "G10000";
+    }
+    else {
+      $new_code = ++$sql[0]->field_game_code_value;
+    }
+
+    $form['field_game_code']['widget'][0]['value']['#default_value'] = $new_code;
+    $user_roles = \Drupal::currentUser()->getRoles();
+    if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles) || in_array('field_officer', $user_roles)) {
+      $form['field_game_status']['#access'] = FALSE;
+    }
+    //~ $form['actions']['submit']['#submit'][]                          = 'game_inventory';
+  }
+
+  if ($form_id == "node_game_edit_form") {
+    $form['field_game_code']['#disabled'] = TRUE;
+    $nid                                  = $form_state->getformObject()->getEntity()->id();
+    $user_roles = \Drupal::currentUser()->getRoles();
+
+    if (!empty($nid)) {
+      $total_qty = 0;
+      $sql_qty   = db_query("SELECT field_total_inventory_value
+                             FROM tban_node__field_total_inventory AS tq
+                             LEFT JOIN tban_node__field_inv_game_name AS gm ON tq.entity_id = gm.entity_id
+                             WHERE gm.field_inv_game_name_target_id = {$nid}")->fetchAll();
+
+      if (!empty($sql_qty)) {
+        $total_qty = $sql_qty[0]->field_total_inventory_value;
+      }
+
+      //~ $form['game_qty'] = [
+        //~ '#markup' => "<div><strong>Quantity:  </strong>" . $total_qty . "</div>",
+        //~ '#weight' => 9,
+      //~ ];
+      $form['game_qty'] = [
+        '#markup' => '<div><label for="edit-field-game-status" class="control-label"><strong>System Quantity</strong></label>: ' . $total_qty . '</div>',
+        '#weight' => 9,
+      ];
+    }
+
+    if (in_array('inventory_manager', $user_roles) || in_array('inventory_executive', $user_roles) || in_array('field_officer', $user_roles)) {
+      $form['field_game_status']['#disabled'] = TRUE;
+    }
+  }
+
+  if ($form_id == "node_record_activity_form") {
+    $user                                                              = User::load(\Drupal::currentUser()->id());
+    $username                                                          = $user->get('name')->value;
+    $form['title']['widget'][0]['value']['#default_value']             = $username . " - Record Activity";
+    $form['title']['#access']                                          = FALSE;
+    $form['field_reportig_fo']['widget'][0]['value']['#default_value'] = $username;
+    $form['field_reportig_fo']['#disabled']                            = TRUE;
+  }
+
+  if ($form_id == "node_record_activity_edit_form") {
+    $form['title']['#access']               = FALSE;
+    $form['field_reportig_fo']['#disabled'] = TRUE;
+  }
+
+  // User form redirect.
+  if ($form_id == 'user_register_form') {
+    $form['actions']['submit']['#submit'][] = 'user_create';
+    $form['field_user_created_by']['widget'][0]['target_id']['#default_value'] = User::load(\Drupal::currentUser()->id());
+  }
+
+  if ($form_id == 'node_source_pickup_form' || $form_id == "node_source_pickup_edit_form") {
+    $form['#validate'][] = 'source_pickup_quality_validate';
+  }
+
+  if ($form_id == 'node_cluster_form' || $form_id == 'node_cluster_edit_form') {
+    $form['field_view_cluster_name']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Redirection on user creation.
+ */
+function user_create($form, FormStateInterface $form_state) {
+  $roles_checked = $form_state->getValue('roles');
+
+  if (in_array('field_officer', $roles_checked) || ($roles_checked == 'field_officer')) {
+    $path = "/node/add/cluster";
+  }
+  else {
+    $path = "/manage-users";
+  }
+
+  $response = new RedirectResponse($path);
+  $response->send();
+}
+
+/**
+ * Validation of quality field when source is pickup.
+ */
+function source_pickup_quality_validate($form, FormStateInterface $form_state) {
+  $source  = $form_state->getValue('field_source');
+  $quality = $form_state->getValue('field_quality_source_pickup');
+
+  if ($source[0]["value"] == "Pickup") {
+    if ($quality[0]["value"] == "") {
+      $form_state->setErrorByName('field_quality_source_pickup', t('Quality field is required.'));
+    }
+  }
+}
+
+/**
+ * Create node game inventory.
+ */
+function game_inventory($form, FormStateInterface &$form_state) {
+  $game_code = $form_state->getValue('field_game_code')[0]['value'];
+  $game_nid  = $form_state->getValue('nid');
+
+  $game_inv_node = Node::create([
+    'type'                => 'game_inventory',
+    'title'               => $game_code,
+    'field_inv_game_name' => $game_nid,
+  ]);
+
+  $game_inv_node->save();
+}
+
+/**
+ * Update node game inventory on inventory creation.
+ */
+function inventory_update($form, FormStateInterface &$form_state) {
+  $inv_nid = $form_state->getValue('nid');
+  drupal_get_messages('status');
+  // to override druapl status message
+  drupal_set_message(t('Inventory Updated Successfully'));
+  if (!empty($inv_nid)) {
+    $sql = db_query("SELECT mg.field_multiple_games_value,gn.field_game_name_target_id,qty.field_quantity_value
+                     FROM tban_node__field_multiple_games AS mg
+                     LEFT JOIN tban_field_collection_item__field_game_name AS gn ON gn.entity_id= mg.field_multiple_games_value
+                     LEFT JOIN tban_field_collection_item__field_quantity AS qty ON qty.entity_id = mg.field_multiple_games_value
+                     WHERE mg.entity_id = {$inv_nid}")->fetchAll();
+
+    foreach ($sql as $val) {
+      $qty     = $val->field_quantity_value;
+      $game_id = $val->field_game_name_target_id;
+      $sql2    = db_query("SELECT entity_id FROM tban_node__field_inv_game_name WHERE field_inv_game_name_target_id = {$game_id}")->fetchAll();
+
+      if (!empty($sql2)) {
+        $game_inv_node = Node::load($sql2[0]->entity_id);
+        $previous_qty  = $game_inv_node->get('field_total_inventory')->value;
+        $total_qty     = $previous_qty + $qty;
+        $game_inv_node->set('field_total_inventory', $total_qty);
+        $user_id = \Drupal::currentUser()->id();
+        $game_inv_node->setNewRevision(TRUE);
+        $game_inv_node->revision_log = '+'.$qty . ' Added';
+        $game_inv_node->setRevisionCreationTime(REQUEST_TIME);
+        $game_inv_node->setRevisionUserId($user_id);
+        $game_inv_node->save();
+      }
+      else {
+        $sql_gcode = db_query("SELECT field_game_code_value FROM tban_node__field_game_code ORDER BY tban_node__field_game_code.field_game_code_value DESC LIMIT 1")->fetchAll();
+
+        $game_inv_node = Node::create([
+          'type'                  => 'game_inventory',
+          'title'                 => $sql_gcode[0]->field_game_code_value,
+          'field_inv_game_name'   => $game_id,
+          'field_total_inventory' => $qty,
+        ]);
+
+        if ($qty) {
+          $user_id = \Drupal::currentUser()->id();
+          $game_inv_node->setNewRevision(TRUE);
+          $game_inv_node->revision_log = '+'.$qty . ' Added';
+          $game_inv_node->setRevisionCreationTime(REQUEST_TIME);
+          $game_inv_node->setRevisionUserId($user_id);
+        }
+
+        $game_inv_node->save();
+      }
+    }
+  }
+}
+
+/**
+ * Update node game inventory on inventory updation.
+ */
+function inventory_edit_update($form, FormStateInterface &$form_state) {
+  $nid     = $form_state->getValue('nid');
+  $pre_sql = db_query("SELECT mg.field_multiple_games_value, gn.field_game_name_target_id, qty.field_quantity_value
+                       FROM tban_node_revision__field_multiple_games AS mg
+                       LEFT JOIN tban_field_collection_item_revision__field_game_name AS gn ON gn.entity_id = mg.field_multiple_games_value AND gn.revision_id = mg.field_multiple_games_revision_id
+                       LEFT JOIN tban_field_collection_item_revision__field_quantity AS qty ON qty.entity_id = mg.field_multiple_games_value AND qty.revision_id = mg.field_multiple_games_revision_id
+                       WHERE mg.entity_id = $nid AND mg.revision_id = (SELECT MAX(revision_id)
+                                                                       FROM tban_node_revision__field_multiple_games
+                                                                       WHERE entity_id = $nid AND revision_id < (SELECT MAX(revision_id) FROM tban_node_revision__field_multiple_games WHERE entity_id = $nid))")->fetchAll();
+  $revkv   = $latest_qty = $ret = [];
+  foreach ($pre_sql as $val) {
+    $revkv[$val->field_game_name_target_id] = $val->field_quantity_value;
+  }
+
+  $sql = db_query("SELECT mg.field_multiple_games_value,gn.field_game_name_target_id,qty.field_quantity_value
+                   FROM tban_node__field_multiple_games AS mg
+                   LEFT JOIN tban_field_collection_item__field_game_name AS gn ON gn.entity_id= mg.field_multiple_games_value
+                   LEFT JOIN tban_field_collection_item__field_quantity AS qty ON qty.entity_id = mg.field_multiple_games_value
+                   WHERE mg.entity_id = {$nid}")->fetchAll();
+
+  foreach ($sql as $val1) {
+    $latest_qty[$val1->field_game_name_target_id] = $val1->field_quantity_value;
+  }
+
+  foreach ($revkv as $key => $value) {
+    $ret[$key] = $latest_qty[$key] - $revkv[$key];
+  }
+
+  if (!empty($ret)) {
+    foreach ($ret as $k => $v) {
+      $total_qty = $qty = $prevQ = 0;
+      $sql2      = db_query("SELECT entity_id FROM tban_node__field_inv_game_name WHERE field_inv_game_name_target_id = {$k}")->fetchAll();
+      if (!empty($sql2)) {
+        $ginv_node = Node::load($sql2[0]->entity_id);
+        $qty       = $ginv_node->get('field_total_inventory')->getValue();
+        if (!empty($qty)) {
+          $prevQ = (int) $qty[0]['value'];
+        }
+        $total_qty = $prevQ + (int) $v;
+        $ginv_node->set('field_total_inventory', $total_qty);
+
+        if ($qty[0]['value'] != $total_qty) {
+          // Make this change a new revision.
+          $user_id = \Drupal::currentUser()->id();
+          $ginv_node->setNewRevision(TRUE);
+
+          if ((int) $v >= 0) {
+            $ginv_node->revision_log = '+'.$v . ' Added';
+          }
+          else {
+            $ginv_node->revision_log = '-'.abs($v) . ' Removed';
+          }
+          $ginv_node->setRevisionCreationTime(REQUEST_TIME);
+          $ginv_node->setRevisionUserId($user_id);
+        }
+        $ginv_node->save();
+      }
+    }
+  }
+}
+
+/**
+ * Ideal inventory update redirection.
+ */
+function update_ideal_redirect($form, FormStateInterface &$form_state) {
+  global $base_url;
+  $playcenter_code = $form_state->getValue('field_playc')[0]['value'];
+  $centername      = $form_state->getValue('title')[0]['value'];
+  $pc_nid          = $form_state->getValue('nid');
+
+  // Create new node for ideal inventory.
+  $ideal_inv_node = Node::create([
+    'type'                       => 'update_ideal_inventory',
+    'title'                      => $playcenter_code,
+    'field_pc_name_update_ideal' => $centername,
+  ]);
+
+  $ideal_inv_node->save();
+  $ideal_id = $ideal_inv_node->id();
+
+  // Update newly added ideal inventory in PC.
+  $pc_node = Node::load($pc_nid);
+  $pc_node->set('field_node_id_update_ideal_inv', $ideal_id);
+  $pc_node->save();
+
+  // Redirect to Update Ideal Page.
+  $path     = $base_url . "/node/" . $ideal_id . "/edit";
+  $response = new RedirectResponse($path);
+  $response->send();
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function toybank_custom_node_presave(EntityInterface $node) {
+  if ($node->bundle() == "inventory") {
+    if (isset($node->field_other_vendor[0])) {
+      $other_vendor_name = $node->field_other_vendor[0]->value;
+    }
+
+    $othervendor = $node->get('field_vendor_taxo')->target_id;
+    $sqlvendor   = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid = 'vendor' AND name = '{$other_vendor_name}'")->fetchAll();
+
+    if (($othervendor == 64) && (empty($sqlvendor))) {
+      $term = Term::create([
+        'name' => $other_vendor_name,
+        'vid'  => 'vendor',
+      ]);
+      $term->Save();
+      $sql = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid='vendor' AND name='{$other_vendor_name}'")->fetchAll();
+      $node->set('field_vendor_taxo', $sql[0]->tid);
+    }
+  }
+
+  if ($node->bundle() == "play_center") {
+    $sumall   = $no_of_kids =  $other_center_name = $other_school_name = $other_type_of_kids = $other_kids_background = 0;
+    $boys_pri = $boys_pp = $boys_sec = $girls_pri = $girls_pp = $girls_sec = $other_kbi_name = $total_number_of_kids = 0;
+
+    if (isset($node->field_type_of_center_other[0])) {
+      $other_center_name = $node->field_type_of_center_other[0]->value;
+    }
+
+    if (isset($node->field_type_of_school_other[0])) {
+      $other_school_name = $node->field_type_of_school_other[0]->value;
+    }
+
+    if (isset($node->field_type_of_kids_other[0])) {
+      $other_type_of_kids = $node->field_type_of_kids_other[0]->value;
+    }
+
+    if (isset($node->field_kids[0])) {
+      $other_kids_background = $node->field_kids[0]->value;
+    }
+
+    $othercenter           = $node->get('field_type_of_center_tax')->target_id;
+    $other_school          = $node->get('field_type_of_school')->target_id;
+    $otherkids             = $node->get('field_ty')->getValue();
+    $other_kids_background = $node->get('field_kids_background')->getValue();
+    $arr_other_kids        = $arr_other_kids_background = [];
+
+    foreach ($otherkids as $val) {
+      $arr_other_kids[] = $val['target_id'];
+    }
+
+    foreach ($other_kids_background as $val) {
+      $arr_other_kids_background[] = $val['target_id'];
+    }
+
+    $sql1 = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid = 'type_of_center' AND name = '{$other_center_name}'")->fetchAll();
+    $sql2 = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid = 'type_of_school' AND name = '{$other_school_name}'")->fetchAll();
+    $sql3 = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid = 'type_of' AND name = '{$other_type_of_kids}'")->fetchAll();
+    $sql4 = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid = 'kids_background' AND name = '{$other_kids_background}'")->fetchAll();
+
+    if ((in_array("26", $arr_other_kids)) && (empty($sql3))) {
+      $term = Term::create(['name' => $other_type_of_kids, 'vid' => 'type_of']);
+      $term->Save();
+      $sql = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid = 'type_of' AND name = '{$other_type_of_kids}'")->fetchAll();
+      array_push($arr_other_kids, $sql[0]->tid);
+      $result = \array_diff($arr_other_kids, ["26"]);
+      $node->set('field_ty', $result);
+    }
+
+    if ((in_array("34", $arr_other_kids_background)) && (empty($sql4))) {
+      $term = Term::create(['name' => $other_kids_background, 'vid' => 'kids_background']);
+      $term->Save();
+      $sql = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid='kids_background' AND name='{$other_kids_background}'")->fetchAll();
+      array_push($arr_other_kids_background, $sql[0]->tid);
+      $result = \array_diff($arr_other_kids_background, ["34"]);
+      $node->set('field_kids_background', $result);
+    }
+
+    if (($othercenter == 19) && (empty($sql1))) {
+      $term = Term::create(['name ' => $other_center_name, 'vid' => 'type_of_center']);
+      $term->Save();
+      $sql = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid='type_of_center' AND name='{$other_center_name}'")->fetchAll();
+      $node->set('field_type_of_center_tax', $sql[0]->tid);
+    }
+
+    if (($other_school == 18) && (empty($sql2))) {
+      $term = Term::create(['name' => $other_school_name, 'vid' => 'type_of_school']);
+      $term->Save();
+      $sql = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid='type_of_school' AND name='{$other_school_name}'")->fetchAll();
+      $node->set('field_type_of_school', $sql[0]->tid);
+    }
+
+    // Update Playcenter code/Name in Ideal Inventory.
+    $ideal_inventory_id = $node->get('field_node_id_update_ideal_inv')->value;
+
+    if (!empty($ideal_inventory_id)) {
+      // Get PC name/Code.
+      $playcenter_code = $node->get('field_playc')->value;
+      $playcenter_name = $node->get('title')->value;
+      // Load Ideal Inv Node and update name/code.
+      $get_ideal_node = Node::load($ideal_inventory_id);
+      $get_ideal_node->set('field_pc_name_update_ideal', $playcenter_name);
+      $get_ideal_node->set('title', $playcenter_code);
+
+      // No of kids and formula.
+      $boys_pri   = $node->get('field_prima')->value;
+      $boys_pp    = $node->get('field_pre_primary_boys')->value;
+      $boys_sec   = $node->get('field_second')->value;
+      $girls_pri  = $node->get('field_pri_girls')->value;
+      $girls_pp   = $node->get('field_pre_primary_girls')->value;
+      $girls_sec  = $node->get('field_secondry_girls')->value;
+      $ispp_check = $node->get('field_primary_check')->getValue();
+
+      // Set total number of kids count.
+      $total_number_of_kids = $boys_pri + $boys_pp + $boys_sec + $girls_pri + $girls_pp + $girls_sec;
+      $node->set('field_total_number_of_kids', $total_number_of_kids);
+
+      //~ $ispp_check_arr = array_column($ispp_check, 'value');
+
+      //~ if (in_array("Pre-Primary", $ispp_check_arr) && count($ispp_check_arr) == 1) {
+        //~ $sumall = round((($boys_pp + $girls_pp) * 0.7) / 5);
+      //~ }
+      //~ else {
+        //~ if (!(in_array("Pre-Primary", $ispp_check_arr))) {
+          //~ $boys_pp = $girls_pp = 0;
+        //~ }
+
+        //~ if (!(in_array("Primary", $ispp_check_arr))) {
+          //~ $boys_pri = $girls_pri = 0;
+        //~ }
+
+        //~ if (!(in_array("Secondary", $ispp_check_arr))) {
+          //~ $boys_sec = $girls_sec = 0;
+        //~ }
+
+        //~ $sumall = round((($boys_pri + $boys_pp + $boys_sec + $girls_pri + $girls_pp + $girls_sec) * 0.7) / 6);
+      //~ }
+
+      //get no of kids session
+      $no_of_kids = $node->get('field_no_of_kids_session')->getValue();
+
+      if ($no_of_kids) {
+        $sumall = round((($no_of_kids[0]['value']) * 0.7) / 6);
+      }
+      else {
+        $sumall = 0;
+      }
+
+      // Set formula value.
+      $get_ideal_node->set('field_alphabetical_update_ideal', $sumall);
+      $get_ideal_node->set('field_block_update_ideal', $sumall);
+      $get_ideal_node->set('field_general_update_ideal', $sumall);
+      $get_ideal_node->set('field_numerical_update_ideal', $sumall);
+      $get_ideal_node->set('field_puzzle_update_ideal', $sumall);
+      $get_ideal_node->set('field_strategy_update_ideal', $sumall);
+      $get_ideal_node->save();
+    }
+  }
+
+  if ($node->bundle() == "kbi") {
+    if (isset($node->field_kbi_category_other[0])) {
+      $other_kbi_name = $node->field_kbi_category_other[0]->value;
+    }
+
+    $kbi_cat_name = $node->get('field_kbi_category')->target_id;
+    $sql1         = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid='kbi_category' AND name='{$other_kbi_name}'")->fetchAll();
+
+    if (($kbi_cat_name == 3) && (empty($sql1))) {
+      $term = Term::create(['name' => $other_kbi_name, 'vid' => 'kbi_category']);
+      $term->Save();
+      $sql2 = db_query("SELECT tid FROM tban_taxonomy_term_field_data WHERE vid='kbi_category' AND name='{$other_kbi_name}'")->fetchAll();
+      $node->set('field_kbi_category', $sql2[0]->tid);
+    }
+  }
+
+  if ($node->bundle() == "game") {
+    $nid = $node->id();
+
+    // Update Game code programtically in field collection.
+    if (empty($nid)) {
+      $sql = db_query("SELECT MAX(field_game_code_value) as gamecode FROM tban_node__field_game_code")->fetchAll();
+
+      if (empty($sql[0]->gamecode)) {
+        $new_code = "G10000";
+      }
+      else {
+        $new_code = ++$sql[0]->gamecode;
+      }
+
+      $node->set('field_game_code', $new_code);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function toybank_custom_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'game_requests' && $view->current_display == 'page_3') {
+    foreach ($view->result as $value) {
+      $nid   = $value->_entity->get('nid')->value;
+      $query = db_query("SELECT revision_timestamp
+                         FROM tban_node_revision
+                         WHERE nid = $nid AND vid = (SELECT MAX(revision_id)
+                                                     FROM tban_node_revision__field_game_request_status
+                                                     WHERE entity_id = $nid AND field_game_request_status_value = 'packed')")->fetchAll();
+
+      if (!empty($query[0]->revision_timestamp)) {
+        $value->_entity->set('created', $query[0]->revision_timestamp);
+      }
+    }
+  }
+
+  if ($view->id() == 'game_requests' && $view->current_display == 'page_4') {
+    foreach ($view->result as $value) {
+      $nid   = $value->_entity->get('nid')->value;
+      $query = db_query("SELECT revision_timestamp
+                         FROM tban_node_revision
+                         WHERE nid = $nid AND vid = (SELECT MAX(revision_id)
+                                                     FROM tban_node_revision__field_game_request_status
+                                                     WHERE entity_id = $nid AND field_game_request_status_value = 'dispatched')")->fetchAll();
+
+      if (!empty($query[0]->revision_timestamp)) {
+        $value->_entity->set('created', $query[0]->revision_timestamp);
+      }
+    }
+  }
+
+  if ($view->id() == 'verify_new_games' && $view->current_display == 'verify_game_csv') {
+    foreach ($view->result as $value) {
+      //~ $nid   = $value->_entity->get('nid')->value;
+      //~ $query = db_query("SELECT COUNT(t.field_pc_total_inventory_value) as total
+                         //~ FROM tban_node__field_pc_total_inventory AS t
+                         //~ LEFT JOIN tban_node__field_pc_inv_game_name AS g ON g.entity_id = t.entity_id
+                         //~ LEFT JOIN tban_node_field_data AS n ON n.nid = g.field_pc_inv_game_name_target_id
+                         //~ WHERE g.field_pc_inv_game_name_target_id = $nid")->fetchAssoc();
+
+
+      //~ if (!empty($query)) {
+        //~ $value->_entity->set('field_system_quantity_export', $query['total']);
+      //~ }
+      //~ $value->_entity->set('field_game_issue', "20");
+    }
+  }
+
+  if ($view->id() == 'inventory_listing' && $view->current_display == 'data_export_1') {
+    foreach ($view->result as $value) {
+      //~ $value->_entity->set('field_system_quantity_export', "20");
+    }
+  }
+
+}
+
