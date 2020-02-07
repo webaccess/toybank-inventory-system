@@ -95,14 +95,16 @@ class TbCustomController extends ControllerBase {
                              LEFT JOIN tban_node_field_data as n ON n.nid = clust.entity_id
                              LEFT JOIN tban_node__field_playc as pc ON pc.entity_id= n.nid
                              LEFT JOIN tban_node__field_status as s ON s.entity_id = n.nid
-                             WHERE fo.field_associated_field_officer_target_id = {$uid} And n.type = 'play_center' AND s.field_status_value = 'Active' AND (n.title LIKE '%$input%' OR pc.field_playc_value LIKE '%$input%') LIMIT 10")->fetchAll();
+                             LEFT JOIN tban_node__field_close_date as cd ON cd.entity_id = n.nid
+                             WHERE fo.field_associated_field_officer_target_id = {$uid} And n.type = 'play_center' AND s.field_status_value = 'Active' AND  cd.field_close_date_value >= CURDATE()  AND (n.title LIKE '%$input%' OR pc.field_playc_value LIKE '%$input%') LIMIT 10")->fetchAll();
       }
       else {
         $playcen = db_query("SELECT  pc.field_playc_value as pcode, n.title, n.nid
                              FROM tban_node_field_data as n
                              LEFT JOIN tban_node__field_playc as pc ON pc.entity_id = n.nid
                              LEFT JOIN tban_node__field_status as s ON s.entity_id = n.nid
-                             WHERE n.type = 'play_center' AND s.field_status_value = 'Active' AND (pc.field_playc_value LIKE '%$input%' OR n.title LIKE '%$input%') ORDER BY pc.field_playc_value LIMIT 10")->fetchAll();
+                             LEFT JOIN tban_node__field_close_date as cd ON cd.entity_id = n.nid
+                             WHERE n.type = 'play_center' AND s.field_status_value = 'Active'  AND (pc.field_playc_value LIKE '%$input%' OR n.title LIKE '%$input%') ORDER BY pc.field_playc_value LIMIT 10")->fetchAll();
       }
 
       if (!empty($playcen)) {
@@ -380,6 +382,7 @@ class TbCustomController extends ControllerBase {
 
     $game_request_node->set('field_gr_delivered_by', $user_id);
     $game_request_node->set('field_gr_date_of_delivered', $date);
+    unset($game_request_node->field_gr_date_of_closed);
 
     // Make this change a new revision.
     $game_request_node->setNewRevision(TRUE);
