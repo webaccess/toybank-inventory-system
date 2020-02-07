@@ -86,7 +86,14 @@ class PendingRequestBlock extends BlockBase {
                 '#rows'    => $rows,
         );
       }
-       return array($variable);
+      if (!empty($variable)) {
+        return array($variable);
+      }
+      else {
+        return [
+          '#markup' => '<h3>Data not avalibale</h3>',
+        ];
+      }
     }
   }
 

@@ -60,6 +60,7 @@ function toybank_custom_form_alter(&$form, FormStateInterface $form_state, $form
   if ($form_id == 'node_play_center_form') {
     $form['field_node_id_update_ideal_inv']['#access'] = FALSE;
     $form['actions']['submit']['#submit'][]            = 'update_ideal_redirect';
+    $form['#validate'][] = 'pc_date_validate';
   }
 
   // PC-Other text field null in edit mode.
@@ -69,6 +70,7 @@ function toybank_custom_form_alter(&$form, FormStateInterface $form_state, $form
     $form['field_type_of_school_other']['widget'][0]['value']['#default_value'] = "";
     $form['field_kids']['widget'][0]['value']['#default_value']                 = "";
     $form['field_node_id_update_ideal_inv']['#access']                          = FALSE;
+    $form['#validate'][] = 'pc_date_validate';
   }
 
   // Update Inventory - Readonly field, PC name and PC code.
@@ -209,6 +211,19 @@ function source_pickup_quality_validate($form, FormStateInterface $form_state) {
     }
   }
 }
+
+/**
+ * Validation of start date and closed date.
+ */
+function pc_date_validate($form, FormStateInterface $form_state) {
+  $start_date  = $form_state->getValue('field_start_date');
+  $end_date = $form_state->getValue('field_close_date');
+
+  if ($end_date < $start_date) {
+    $form_state->setErrorByName('field_close_date', t('Closed Date should be greater than Start Date.'));
+  }
+}
+
 
 /**
  * Create node game inventory.
