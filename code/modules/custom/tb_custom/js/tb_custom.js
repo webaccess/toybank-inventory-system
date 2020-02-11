@@ -48,7 +48,7 @@ jQuery(document).ready(function () {
       try {
         document.title = window.parent.document.title = title;
         print();
-      } catch (e) { 
+      } catch (e) {
         var p = window.open(location.href);
         p.onload = function() {
           p.document.title = "PP";
@@ -83,8 +83,6 @@ jQuery(document).ready(function () {
       }
     });
   }
-
-
 
 });
 

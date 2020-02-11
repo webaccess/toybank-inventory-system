@@ -96,7 +96,7 @@ class TbCustomController extends ControllerBase {
                              LEFT JOIN tban_node__field_playc as pc ON pc.entity_id= n.nid
                              LEFT JOIN tban_node__field_status as s ON s.entity_id = n.nid
                              LEFT JOIN tban_node__field_close_date as cd ON cd.entity_id = n.nid
-                             WHERE fo.field_associated_field_officer_target_id = {$uid} And n.type = 'play_center' AND s.field_status_value = 'Active' AND  cd.field_close_date_value >= CURDATE()  AND (n.title LIKE '%$input%' OR pc.field_playc_value LIKE '%$input%') LIMIT 10")->fetchAll();
+                             WHERE fo.field_associated_field_officer_target_id = {$uid} And n.type = 'play_center' AND s.field_status_value = 'Active' AND  cd.field_close_date_value >= CURDATE() AND (n.title LIKE '%$input%' OR pc.field_playc_value LIKE '%$input%') LIMIT 10")->fetchAll();
       }
       else {
         $playcen = db_query("SELECT  pc.field_playc_value as pcode, n.title, n.nid

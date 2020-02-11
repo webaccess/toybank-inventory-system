@@ -939,7 +939,7 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
           $current_qty = $current_query[0]->current_qty;
         }
 
-        $shortfall_qty = $ideal_qty - $current_qty ;
+        $shortfall_qty = $ideal_inv - $current_qty ;
 
       }
 
@@ -1077,6 +1077,13 @@ function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) 
         '#weight' => 20,
       ];
     }
+  }
+
+  if ($form_id == 'node_help_section_form' || $form_id == 'node_help_section_edit_form') {
+    $form['actions']['cancel'] = [
+      '#markup' => "<a href='/help-section' class='btn cancel-btn'>Cancel</a>",
+      '#weight' => 20,
+    ];
   }
 
   if ($form_id == 'node_play_center_edit_form' || $form_id == 'node_play_center_form') {
