@@ -131,13 +131,14 @@ class RequestExport extends ControllerBase {
 
               $sheet->setCellValue('A1', "#");
               $sheet->setCellValue('B1', "Req ID");
-              $sheet->setCellValue('C1', "Center Code");
-              $sheet->setCellValue('D1', "GCode");
-              $sheet->setCellValue('E1', "Game Name");
-              $sheet->setCellValue('F1', "Category");
-              $sheet->setCellValue('G1', "Age Group");
-              $sheet->setCellValue('H1', "Req Qty");
-              $sheet->setCellValue('I1', "Packed/Delivered Qty");
+              $sheet->setCellValue('C1', "Status");
+              $sheet->setCellValue('D1', "Center Code");
+              $sheet->setCellValue('E1', "GCode");
+              $sheet->setCellValue('F1', "Game Name");
+              $sheet->setCellValue('G1', "Category");
+              $sheet->setCellValue('H1', "Age Group");
+              $sheet->setCellValue('I1', "Req Qty");
+              $sheet->setCellValue('J1', "Packed/Delivered Qty");
           $counter = 0;
           $j=1;
           $nids =  implode(', ',$rids);
@@ -154,7 +155,7 @@ class RequestExport extends ControllerBase {
             $final_query = db_query("SELECT fc.entity_id as rid, co.field_playc_value as center_code, gc.field_game_code_value as game_code,
                                     (SELECT title FROM tban_node_field_data WHERE nid = gn.field_request_game_name_target_id) as game_name, tax.name as category,
                                     (SELECT GROUP_CONCAT(field_sub_catgeory_value) FROM tban_node__field_sub_catgeory WHERE entity_id = gn.field_request_game_name_target_id) as subcategory,
-                                    rq.field_req_game_quantity_value as req_qty, pq.field_packed_quantity_value as pack_qty
+                                    rq.field_req_game_quantity_value as req_qty, pq.field_packed_quantity_value as pack_qty, st.field_game_request_status_value as game_status, fs.field_fo_status_value as fo_status
                                     FROM tban_node__field_game_request_quantity as fc
                                     LEFT JOIN tban_node__field_play_center as pc ON pc.entity_id = fc.entity_id
                                     LEFT JOIN tban_node__field_playc as co ON co.entity_id = pc.field_play_center_target_id
@@ -164,6 +165,8 @@ class RequestExport extends ControllerBase {
                                     LEFT JOIN tban_taxonomy_term_field_data as tax ON tax.tid = cat.field_category_target_id
                                     LEFT JOIN tban_field_collection_item__field_req_game_quantity as rq ON rq.entity_id = fc.field_game_request_quantity_value
                                     LEFT JOIN tban_field_collection_item__field_packed_quantity as pq ON pq.entity_id = fc.field_game_request_quantity_value
+                                    LEFT JOIN tban_node__field_game_request_status as st ON st.entity_id = fc.entity_id
+                                    LEFT JOIN tban_node__field_fo_status as fs ON fs.entity_id = fc.entity_id
                                       WHERE fc.entity_id IN ({$nids})
                                       ORDER BY fc.entity_id DESC, tax.weight, (SELECT title FROM tban_node_field_data WHERE nid = gn.field_request_game_name_target_id)")->fetchAll();
 
@@ -171,6 +174,22 @@ class RequestExport extends ControllerBase {
             if (!empty($final_query)) {
 
               foreach ($final_query as $f) {
+                $status = $f->game_status;
+                if ($status == 'partially_delivered') {
+                  $status = 'Partially Delivered';
+                }
+                if ($status == 'pending') {
+                  if ($f->fo_status == 'approved') {
+                    $status = 'Waiting to be Packed';
+                  }
+                  elseif ($f->fo_status == 'waiting_for_approval') {
+                    $status = 'Waiting for Approval';
+                  }
+                  else {
+                    $status =   $f->fo_status;
+                  }
+                }
+
                 $pc_qty = '-';
                 if(!empty($f->pack_qty)) {
                   $pc_qty = $f->pack_qty;
@@ -179,13 +198,14 @@ class RequestExport extends ControllerBase {
                 $counter = ++$counter;
                 $sheet->setCellValue('A'.$j, $counter);
                 $sheet->setCellValue('B'.$j, $f->rid);
-                $sheet->setCellValue('C'.$j, $f->center_code);
-                $sheet->setCellValue('D'.$j, $f->game_code);
-                $sheet->setCellValue('E'.$j, $f->game_name);
-                $sheet->setCellValue('F'.$j, $f->category);
-                $sheet->setCellValue('G'.$j, $f->subcategory);
-                $sheet->setCellValue('H'.$j, $f->req_qty);
-                $sheet->setCellValue('I'.$j, $pc_qty);
+                $sheet->setCellValue('C'.$j, ucfirst($status));
+                $sheet->setCellValue('D'.$j, $f->center_code);
+                $sheet->setCellValue('E'.$j, $f->game_code);
+                $sheet->setCellValue('F'.$j, $f->game_name);
+                $sheet->setCellValue('G'.$j, $f->category);
+                $sheet->setCellValue('H'.$j, $f->subcategory);
+                $sheet->setCellValue('I'.$j, $f->req_qty);
+                $sheet->setCellValue('J'.$j, $pc_qty);
               }
             }
           //~ }
