@@ -905,8 +905,9 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
 
   if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'data_export_5')) {
     foreach ($view->result as $value) {
-      $ideal_inv = $ideal_qty = $current_qty = $shortfall_qty = 0;
+      $ideal_inv = $ideal_qty = $current_qty = $shortfall_qty = $shorfall_percent = 0;
       $nid = $value->_entity->get('nid')->value;
+      $url = '-';
 
       if (!empty($nid)) {
         $total_ideal = db_query("SELECT field_no_of_kids_session_value as ideal FROM tban_node__field_no_of_kids_session WHERE entity_id = {$nid}")->fetchall();
@@ -926,27 +927,37 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
                                   LEFT JOIN tban_node__field_play_center_inventory_name as pc ON pc.entity_id = ti.entity_id
                                   WHERE pc.field_play_center_inventory_name_target_id = {$nid}")->fetchAll();
 
-        if (!empty($update_ideal_node)) {
-          $ideal_qty = $update_ideal_node->get('field_strategy_update_ideal')->value +
-                       $update_ideal_node->get('field_puzzle_update_ideal')->value +
-                       $update_ideal_node->get('field_block_update_ideal')->value +
-                       $update_ideal_node->get('field_alphabetical_update_ideal')->value +
-                       $update_ideal_node->get('field_numerical_update_ideal')->value +
-                       $update_ideal_node->get('field_general_update_ideal')->value;
-        }
-
         if (!empty($current_query[0]->current_qty)) {
           $current_qty = $current_query[0]->current_qty;
         }
 
         $shortfall_qty = $ideal_inv - $current_qty ;
 
+        if (!empty($shortfall_qty) && ($shortfall_qty != 0) ) {
+          $shorfall_percent = (($shortfall_qty / $ideal_inv)* 100);
+          $shorfall_percent = number_format($shorfall_percent,2,".",".");
+        }
+
+        //documents
+        $sql = db_query("SELECT dc.field_upload_documents_pc_target_id as fid FROM tban_node__field_upload_documents_playcen as fc
+                          LEFT JOIN tban_field_collection_item__field_upload_documents_pc as dc on fc.field_upload_documents_playcen_value = dc.entity_id
+                          WHERE fc.entity_id = $nid")->fetchAll();
+        $fid = $sql[0]->fid;
+
+        if ($fid) {
+          global $base_url;
+          $file = File::load($fid);
+          $uri = $file->getFileUri();
+          $url = str_replace('public://',$base_url.'/sites/default/files/',$uri);
+        }
+
       }
 
       $value->_entity->set('field_node_id_update_ideal_inv', $ideal_inv);
-      $value->_entity->set('field_ideal_exp', $ideal_qty);
+      $value->_entity->set('field_ideal_exp', $shorfall_percent);
       $value->_entity->set('field_current_exp', $current_qty);
       $value->_entity->set('field_shortfall_exp', $shortfall_qty);
+      $value->_entity->set('field_documents_export', $url);
     }
   }
 }
@@ -1460,8 +1471,6 @@ function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) 
     $system_roles = user_role_names(TRUE);
     $form['field_help_role']['widget']['#options'] += $system_roles;
   }
-
-
 }
 
 /**

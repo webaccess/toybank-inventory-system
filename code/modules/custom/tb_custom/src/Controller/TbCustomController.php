@@ -551,7 +551,7 @@ class TbCustomController extends ControllerBase {
                    <div><span class='dr-footer-left'>Signature and Date Of Toybank Authority</span><span class='dr-footer-right'>Signature Of Partner Authority</span></div>
                  </div>";
 
-      $back_button = '<div class="back-but"><a href="/dispatched-game-requests"><span class="glyphicon glyphicon-repeat"></span> Back to List</a></div>';
+      $back_button = '<div class="back-but"><a class="go-back-button" href="/dispatched-game-requests">Go Back</a></div>';
 
       $element = [
         '#type'   => 'markup',
