@@ -761,7 +761,7 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1')) {
     foreach ($view->result as $value) {
       $nid = $value->_entity->get('nid')->value;
-      $request_qty = $pack_qty = 0;
+      $req_qty = 0;
       $days = '-';
 
       if (!empty($nid)) {
@@ -779,11 +779,12 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
                            WHERE ad.entity_id = {$nid} AND
                             (rs.field_game_request_status_value  = 'delivered' OR  rs.field_game_request_status_value = 'closed' OR rs.field_game_request_status_value = 'partially_delivered')")->fetchAll();
 
-        if (!empty($requested_query)) {
-          foreach($requested_query as $qty) {
-            $request_qty += $qty->req_qty;
-            $pack_qty += $qty->packed_qty;
-          }
+        if (!empty($requested_query[0]->req_qty)) {
+          $req_qty = $requested_query[0]->req_qty;
+        }
+
+        if (!empty($requested_query[0]->packed_qty)) {
+          $packed_qty = $requested_query[0]->packed_qty;
         }
 
         if (!empty($query)) {
@@ -791,9 +792,9 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
           $days = abs(round($diff / 86400));
         }
 
-        $value->_entity->set('field_fo_remarks', $request_qty);
+        $value->_entity->set('field_fo_remarks', $req_qty);
         $value->_entity->set('field_description_request_closed', $days);
-        $value->_entity->set('field_packed_qty_exp', $pack_qty);
+        $value->_entity->set('field_packed_qty_exp', $packed_qty);
       }
     }
   }
@@ -905,8 +906,9 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
 
   if ($view->id() == 'data_entry_listing_view' && ($view->current_display == 'data_export_5')) {
     foreach ($view->result as $value) {
-      $ideal_inv = $ideal_qty = $current_qty = $shortfall_qty = 0;
+      $ideal_inv = $ideal_qty = $current_qty = $shortfall_qty = $shorfall_percent = 0;
       $nid = $value->_entity->get('nid')->value;
+      $url = '-';
 
       if (!empty($nid)) {
         $total_ideal = db_query("SELECT field_no_of_kids_session_value as ideal FROM tban_node__field_no_of_kids_session WHERE entity_id = {$nid}")->fetchall();
@@ -926,14 +928,15 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
                                   LEFT JOIN tban_node__field_play_center_inventory_name as pc ON pc.entity_id = ti.entity_id
                                   WHERE pc.field_play_center_inventory_name_target_id = {$nid}")->fetchAll();
 
-        if (!empty($update_ideal_node)) {
-          $ideal_qty = $update_ideal_node->get('field_strategy_update_ideal')->value +
-                       $update_ideal_node->get('field_puzzle_update_ideal')->value +
-                       $update_ideal_node->get('field_block_update_ideal')->value +
-                       $update_ideal_node->get('field_alphabetical_update_ideal')->value +
-                       $update_ideal_node->get('field_numerical_update_ideal')->value +
-                       $update_ideal_node->get('field_general_update_ideal')->value;
-        }
+        //~ if (!empty($update_ideal_node)) {
+          //~ $ideal_qty = $update_ideal_node->get('field_strategy_update_ideal')->value +
+                       //~ $update_ideal_node->get('field_puzzle_update_ideal')->value +
+                       //~ $update_ideal_node->get('field_block_update_ideal')->value +
+                       //~ $update_ideal_node->get('field_alphabetical_update_ideal')->value +
+                       //~ $update_ideal_node->get('field_numerical_update_ideal')->value +
+                       //~ $update_ideal_node->get('field_general_update_ideal')->value;
+        //~ }
+
 
         if (!empty($current_query[0]->current_qty)) {
           $current_qty = $current_query[0]->current_qty;
@@ -941,12 +944,31 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
 
         $shortfall_qty = $ideal_inv - $current_qty ;
 
+        if (!empty($shortfall_qty) && ($shortfall_qty != 0) ) {
+          $shorfall_percent = (($shortfall_qty / $ideal_inv)* 100);
+          $shorfall_percent = number_format($shorfall_percent,2,".",".");
+        }
+
+        //documents
+        $sql = db_query("SELECT dc.field_upload_documents_pc_target_id as fid FROM tban_node__field_upload_documents_playcen as fc
+                          LEFT JOIN tban_field_collection_item__field_upload_documents_pc as dc on fc.field_upload_documents_playcen_value = dc.entity_id
+                          WHERE fc.entity_id = $nid")->fetchAll();
+        $fid = $sql[0]->fid;
+
+        if ($fid) {
+          global $base_url;
+          $file = File::load($fid);
+          $uri = $file->getFileUri();
+          $url = str_replace('public://',$base_url.'/sites/default/files/',$uri);
+        }
+
       }
 
       $value->_entity->set('field_node_id_update_ideal_inv', $ideal_inv);
-      $value->_entity->set('field_ideal_exp', $ideal_qty);
+      $value->_entity->set('field_ideal_exp', $shorfall_percent);
       $value->_entity->set('field_current_exp', $current_qty);
       $value->_entity->set('field_shortfall_exp', $shortfall_qty);
+      $value->_entity->set('field_documents_export', $url);
     }
   }
 }
@@ -1080,10 +1102,12 @@ function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) 
   }
 
   if ($form_id == 'node_help_section_form' || $form_id == 'node_help_section_edit_form') {
-    $form['actions']['cancel'] = [
-      '#markup' => "<a href='/help-section' class='btn cancel-btn'>Cancel</a>",
-      '#weight' => 20,
-    ];
+    //~ if (!empty($_GET['destination'])) {
+      $form['actions']['cancel'] = [
+        '#markup' => "<a href='/help-section' class='btn cancel-btn'>Cancel</a>",
+        '#weight' => 20,
+      ];
+    //~ }
   }
 
   if ($form_id == 'node_play_center_edit_form' || $form_id == 'node_play_center_form') {
@@ -1457,8 +1481,12 @@ function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) 
   }
 
   if ($form_id == 'node_help_section_form' || $form_id == 'node_help_section_edit_form') {
-    $system_roles = user_role_names(TRUE);
-    $form['field_help_role']['widget']['#options'] += $system_roles;
+    //~ $system_roles = user_role_names(TRUE);
+
+    //~ $options =  array('admin'=>"Admin",'data-admin'=> "Data Admin");
+    //~ $form['field_help_role']['#type'] = 'select';
+    //~ $form['field_help_role']['#options'] = $options;
+    //~ $form['field_help_role']['#size'] = 1;
   }
 
 
