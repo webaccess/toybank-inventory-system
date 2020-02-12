@@ -382,6 +382,7 @@ class TbCustomController extends ControllerBase {
 
     $game_request_node->set('field_gr_delivered_by', $user_id);
     $game_request_node->set('field_gr_date_of_delivered', $date);
+    unset($game_request_node->field_gr_date_of_closed);
 
     // Make this change a new revision.
     $game_request_node->setNewRevision(TRUE);
@@ -477,6 +478,7 @@ class TbCustomController extends ControllerBase {
                        ORDER BY td.weight")->fetchAll();
 
     if (!empty($query)) {
+      global $base_url;
       $category_count = $subcat = [];
       $headercode     = '';
       $table          = "<table class='tbl_inventory' id='dispatch-report-table'>
@@ -533,7 +535,7 @@ class TbCustomController extends ControllerBase {
       }
 
       $header = "<div class='dispatch-report-header'>
-                   <div class='dr-header-left'><img src='https://toybank.wastaging.com/sites/default/files/toybank_logo.png'></div>
+                   <div class='dr-header-left'><img src='$base_url/sites/default/files/toybank_logo.png'></div>
                    <div class='dr-header-right'>
                     <div class='dr-requested-id'><span class='request-id-dispatch'><span>Request ID</span>: " . $nid . "</span> <span class='total-dispatch-sheet'><span>Total</span>: ".$game_quantity."(".$row.")</span></div>
                      <div>" . $headercode . "</div>

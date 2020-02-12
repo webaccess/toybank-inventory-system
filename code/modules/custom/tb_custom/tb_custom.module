@@ -761,7 +761,7 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'game_request_listing' && ($view->current_display == 'page_1' || $view->current_display == 'data_export_1')) {
     foreach ($view->result as $value) {
       $nid = $value->_entity->get('nid')->value;
-      $req_qty = 0;
+      $request_qty = $pack_qty = 0;
       $days = '-';
 
       if (!empty($nid)) {
@@ -779,12 +779,11 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
                            WHERE ad.entity_id = {$nid} AND
                             (rs.field_game_request_status_value  = 'delivered' OR  rs.field_game_request_status_value = 'closed' OR rs.field_game_request_status_value = 'partially_delivered')")->fetchAll();
 
-        if (!empty($requested_query[0]->req_qty)) {
-          $req_qty = $requested_query[0]->req_qty;
-        }
-
-        if (!empty($requested_query[0]->packed_qty)) {
-          $packed_qty = $requested_query[0]->packed_qty;
+        if (!empty($requested_query)) {
+          foreach($requested_query as $qty) {
+            $request_qty += $qty->req_qty;
+            $pack_qty += $qty->packed_qty;
+          }
         }
 
         if (!empty($query)) {
@@ -792,9 +791,9 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
           $days = abs(round($diff / 86400));
         }
 
-        $value->_entity->set('field_fo_remarks', $req_qty);
+        $value->_entity->set('field_fo_remarks', $request_qty);
         $value->_entity->set('field_description_request_closed', $days);
-        $value->_entity->set('field_packed_qty_exp', $packed_qty);
+        $value->_entity->set('field_packed_qty_exp', $pack_qty);
       }
     }
   }
@@ -927,16 +926,6 @@ function tb_custom_views_pre_render(ViewExecutable $view) {
                                   FROM tban_node__field_pc_total_inventory as ti
                                   LEFT JOIN tban_node__field_play_center_inventory_name as pc ON pc.entity_id = ti.entity_id
                                   WHERE pc.field_play_center_inventory_name_target_id = {$nid}")->fetchAll();
-
-        //~ if (!empty($update_ideal_node)) {
-          //~ $ideal_qty = $update_ideal_node->get('field_strategy_update_ideal')->value +
-                       //~ $update_ideal_node->get('field_puzzle_update_ideal')->value +
-                       //~ $update_ideal_node->get('field_block_update_ideal')->value +
-                       //~ $update_ideal_node->get('field_alphabetical_update_ideal')->value +
-                       //~ $update_ideal_node->get('field_numerical_update_ideal')->value +
-                       //~ $update_ideal_node->get('field_general_update_ideal')->value;
-        //~ }
-
 
         if (!empty($current_query[0]->current_qty)) {
           $current_qty = $current_query[0]->current_qty;
@@ -1102,12 +1091,10 @@ function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) 
   }
 
   if ($form_id == 'node_help_section_form' || $form_id == 'node_help_section_edit_form') {
-    //~ if (!empty($_GET['destination'])) {
-      $form['actions']['cancel'] = [
-        '#markup' => "<a href='/help-section' class='btn cancel-btn'>Cancel</a>",
-        '#weight' => 20,
-      ];
-    //~ }
+    $form['actions']['cancel'] = [
+      '#markup' => "<a href='/help-section' class='btn cancel-btn'>Cancel</a>",
+      '#weight' => 20,
+    ];
   }
 
   if ($form_id == 'node_play_center_edit_form' || $form_id == 'node_play_center_form') {
@@ -1481,15 +1468,9 @@ function tb_custom_form_alter(&$form, FormStateInterface $form_state, $form_id) 
   }
 
   if ($form_id == 'node_help_section_form' || $form_id == 'node_help_section_edit_form') {
-    //~ $system_roles = user_role_names(TRUE);
-
-    //~ $options =  array('admin'=>"Admin",'data-admin'=> "Data Admin");
-    //~ $form['field_help_role']['#type'] = 'select';
-    //~ $form['field_help_role']['#options'] = $options;
-    //~ $form['field_help_role']['#size'] = 1;
+    $system_roles = user_role_names(TRUE);
+    $form['field_help_role']['widget']['#options'] += $system_roles;
   }
-
-
 }
 
 /**
