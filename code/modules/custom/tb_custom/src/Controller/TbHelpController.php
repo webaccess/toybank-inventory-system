@@ -16,7 +16,7 @@ class TbHelpController extends ControllerBase {
 
     $user_roles = \Drupal::currentUser()->getRoles();
 
-    if (in_array('super_admin', $user_roles)) {
+    if (in_array('super_admin', $user_roles) || in_array('administrator', $user_roles)) {
       $query_where = "WHERE n.type='help_section'";
     }
     else {
@@ -30,10 +30,10 @@ class TbHelpController extends ControllerBase {
     $tab_query = db_query("SELECT n.nid, n.title, tc.field_help_tab_content_value
                            FROM tban_node_field_data as n
                            LEFT JOIN tban_node__field_help_role as r ON r.entity_id = n.nid
-                           LEFT JOIN tban_node__field_help_serial_no as s ON s.entity_id = n.nid
+                           LEFT JOIN tban_draggableviews_structure as s ON s.entity_id = n.nid
                            LEFT JOIN tban_node__field_help_tab_content as tc ON tc.entity_id = n.nid
                            $query_where
-                           ORDER BY s.field_help_serial_no_value ASC")->fetchAll();
+                           ORDER BY s.weight ASC")->fetchAll();
 
     if (!empty($tab_query)) {
       foreach ($tab_query as $k => $v) {
@@ -45,7 +45,7 @@ class TbHelpController extends ControllerBase {
           $active = $face_active = '';
         }
 
-        if (in_array('super_admin', $user_roles)) {
+        if (in_array('super_admin', $user_roles) || in_array('administrator', $user_roles)) {
           $node_edit = '<div class="help-edit"><a href="/node/' . $v->nid . '/edit">Edit</a></div>';
         }
         else {
