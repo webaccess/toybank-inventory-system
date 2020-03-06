@@ -53,7 +53,7 @@ class TbHelpController extends ControllerBase {
         }
 
         $wrapper = str_replace(" ", "-", strtolower($v->title)) . '-wrapper';
-        $wrapper = str_replace("/", "-",$wrapper);
+        $wrapper = str_replace("/", "-",$wrapper) . "-" . $v->nid;
         $menus .= '<span data-toggle="tab" href="#' . $wrapper . '">
                      <a href="#' . $wrapper . '" data-toggle="collapse" class="dropdown-toggle ' . $active . '">' . $v->title . '</a>
                    </span>
